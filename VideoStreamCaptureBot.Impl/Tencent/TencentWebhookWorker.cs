@@ -14,8 +14,11 @@ namespace VideoStreamCaptureBot.Impl.Tencent;
 public class TencentWebhookWorker(
     ILogger<TencentWebhookWorker> logger,
     IOptions<TencentImplOption> options,
-    ISignProvider signProvider) : BackgroundService
+    ISignProvider signProvider
+    ) : BackgroundService
 {
+    public Func<byte[]> CapturedCommandReceivedInvoke { get; set; }
+
     protected override Task ExecuteAsync(CancellationToken stoppingToken)
     => Task.Run(async () =>
         {
@@ -62,10 +65,7 @@ public class TencentWebhookWorker(
 
                 try
                 {
-                    using var reader = new StreamReader(req.InputStream);
-                    var body = await reader.ReadToEndAsync();
-                    logger.LogInformation("Received request with payload: {json}", body);
-                    payload = JsonSerializer.Deserialize<Payload>(body);
+                    payload = await JsonSerializer.DeserializeAsync<Payload>(req.InputStream, cancellationToken: stoppingToken);
                 }
                 catch (Exception e)
                 {
@@ -82,18 +82,31 @@ public class TencentWebhookWorker(
                     continue;
                 }
 
+                logger.LogInformation("Received event {e}, content {c}.", payload.OperationCode.ToString(), payload.JsonEventContent);
+
                 switch (payload.OperationCode)
                 {
                     case OperationCode.HttpCallbackVerify:
-                        var content = payload.EventContent as HttpCallbackVerify;
-                        var signed = signProvider.Sign(content.EventTimespan + content.PlainToken);
+                        var verify = payload.GetEventContent<HttpCallbackVerify>();
+                        var signed = signProvider.Sign(verify.EventTimespan + verify.PlainToken);
+                        var hex = signed.ToHex();
+
+                        logger.LogInformation("Finish sign, result {hex}, return.", hex);
 
                         resp.StatusCode = (int)HttpStatusCode.OK;
                         await JsonSerializer.SerializeAsync(resp.OutputStream, new
                         {
-                            plain_token = content.PlainToken,
-                            signature = signed.ToHex(),
+                            plain_token = verify.PlainToken,
+                            signature = hex,
                         }, cancellationToken: stoppingToken);
+
+                        break;
+                    case OperationCode.Dispatch:
+                        var dispatch = payload.GetEventContent<Dispatch>();
+                        if (dispatch?.Content.StartsWith("让我看看") ?? false)
+                        {
+                            CapturedCommandReceivedInvoke?.Invoke();
+                        }
 
                         break;
                     default:

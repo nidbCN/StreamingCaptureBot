@@ -1,31 +1,28 @@
-﻿using System.Text.Json.Serialization;
-using VideoStreamCaptureBot.Impl.Tencent.Json.Serialization;
+﻿using System.Text.Json;
+using System.Text.Json.Serialization;
+using VideoStreamCaptureBot.Impl.Tencent.Protocols.EventContents;
 
 namespace VideoStreamCaptureBot.Impl.Tencent.Protocols;
 
-[JsonConverter(typeof(JsonPayloadConverter))]
 public record Payload
 {
-    [JsonIgnore]
-    public const string OperationCodeProp = "op";
-
-    [JsonIgnore]
-    public const string EventContentProp = "d";
-
     [JsonPropertyName("id")]
-    public required string EventId { get; set; }
+    public string EventId { get; set; }
 
-    [JsonPropertyName(OperationCodeProp)]
-    public required OperationCode OperationCode { get; set; }
+    [JsonPropertyName("op")]
+    public OperationCode OperationCode { get; set; }
 
-    [JsonPropertyName(EventContentProp)]
-    public required object EventContent { get; set; } = null!;
+    [JsonPropertyName("d")]
+    public JsonElement JsonEventContent { get; set; }
 
     [JsonPropertyName("s")]
-    public required uint Sequence { get; set; }
+    public uint Sequence { get; set; }
 
     [JsonPropertyName("t")]
-    public required string EventType { get; set; }
+    public string EventType { get; set; }
+
+    public T? GetEventContent<T>() where T : IEventContent
+    => JsonEventContent.Deserialize<T>();
 }
 
 public enum OperationCode

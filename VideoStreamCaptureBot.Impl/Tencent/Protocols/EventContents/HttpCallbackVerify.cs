@@ -2,7 +2,7 @@
 
 namespace VideoStreamCaptureBot.Impl.Tencent.Protocols.EventContents;
 
-public record HttpCallbackVerify
+public record HttpCallbackVerify : IEventContent
 {
     [JsonPropertyName("plain_token")]
     public required string PlainToken { get; set; }
