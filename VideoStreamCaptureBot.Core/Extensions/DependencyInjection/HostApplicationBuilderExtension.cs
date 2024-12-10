@@ -27,6 +27,11 @@ public static class HostApplicationBuilderExtension
             => isoStore);
         builder.Services.AddSingleton(_
             => BotFactory.Create(option.LagrangeBotConfig.LagrangeConfig, deviceInfo, keyStore));
+
+        builder.Services.AddOptions();
+        builder.Services.Configure<BotOption>(
+            builder.Configuration.GetRequiredSection(nameof(BotOption)));
+
         builder.Services.AddHostedService<LagrangeHost>();
 
         return builder;

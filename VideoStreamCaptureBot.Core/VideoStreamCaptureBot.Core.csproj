@@ -4,19 +4,18 @@
 		<TargetFramework>net8.0</TargetFramework>
 		<Nullable>enable</Nullable>
 		<ImplicitUsings>enable</ImplicitUsings>
-		<UserSecretsId>dotnet-CameraScreenshotBotService-cb025c89-792b-4dc9-b906-741e8edcffc7</UserSecretsId>
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 		<DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
 		<DockerfileContext>.</DockerfileContext>
 		<ProduceReferenceAssembly>False</ProduceReferenceAssembly>
-		<AssemblyVersion>8.1.5.6</AssemblyVersion>
-		<FileVersion>8.1.5.6</FileVersion>
+		<AssemblyVersion>8.1.6.0</AssemblyVersion>
+		<FileVersion>8.1.6.0</FileVersion>
 	</PropertyGroup>
 
-        <PropertyGroup>
+	<PropertyGroup>
 		<InvariantGlobalization>true</InvariantGlobalization>
 		<JsonSerializerIsReflectionEnabledByDefault>true</JsonSerializerIsReflectionEnabledByDefault>
-        </PropertyGroup>
+	</PropertyGroup>
 
 	<ItemGroup>
 		<PackageReference Include="FFmpeg.AutoGen.Bindings.DynamicallyLinked" Version="7.0.0" />
@@ -29,8 +28,8 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <ProjectReference Include="..\Lagrange.Core\Lagrange.Core\Lagrange.Core.csproj" />
-	  <ProjectReference Include="..\VideoStreamCaptureBot.Impl\Tencent\VideoStreamCaptureBot.Impl.Tencent.csproj" />
-	  <ProjectReference Include="..\VideoStreamCaptureBot.Utils\VideoStreamCaptureBot.Utils.csproj" />
+		<ProjectReference Include="..\Lagrange.Core\Lagrange.Core\Lagrange.Core.csproj" />
+		<ProjectReference Include="..\VideoStreamCaptureBot.Impl\Tencent\VideoStreamCaptureBot.Impl.Tencent.csproj" />
+		<ProjectReference Include="..\VideoStreamCaptureBot.Utils\VideoStreamCaptureBot.Utils.csproj" />
 	</ItemGroup>
 </Project>

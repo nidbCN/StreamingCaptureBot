@@ -21,18 +21,27 @@ public class TencentWebhookWorker(
         {
             using var listener = new HttpListener();
 
-            var listen = options.Value.ListenIpAddress.MapToIPv4().ToString();
+            var listen = options.Value.ListenIpAddress;
             var port = options.Value.ListenPort;
             var route = options.Value.Route;
 
-            logger.LogInformation("Start webhook listen on `http://{ip}:{port}{route}.`", listen, port, route);
+            logger.LogInformation("Start webhook listen on `http://{ip}:{port}{route}`.", listen, port, route);
 
-            if (options.Value.ListenIpAddress.Equals(IPAddress.Any))
+            if (IPAddress.TryParse(listen, out var ip))
             {
-                listen = "+";
+                if (ip.Equals(IPAddress.Any))
+                    listen = "+";
+            }
+            else
+            {
+                listen = IPAddress.Loopback.ToString();
             }
 
-            listener.Prefixes.Add($"http://{listen}:{port}{route}");
+            var fullUrl = $"http://{listen}:{port}{route}";
+
+            logger.LogInformation("Add `{url}` to listener prefixes list.", fullUrl);
+
+            listener.Prefixes.Add(fullUrl);
 
             listener.Start();
 
@@ -41,10 +50,34 @@ public class TencentWebhookWorker(
                 var ctx = await listener.GetContextAsync();
                 var req = ctx.Request;
                 using var resp = ctx.Response;
-                var payload = await JsonSerializer.DeserializeAsync<Payload>(req.InputStream, cancellationToken: stoppingToken);
+
+                if (!req.HasEntityBody)
+                {
+                    logger.LogInformation("Received no body, return {bad}.", HttpStatusCode.BadRequest.ToString());
+                    resp.StatusCode = (int)HttpStatusCode.BadRequest;
+                    continue;
+                }
+
+                Payload? payload;
+
+                try
+                {
+                    using var reader = new StreamReader(req.InputStream);
+                    var body = await reader.ReadToEndAsync();
+                    logger.LogInformation("Received request with payload: {json}", body);
+                    payload = JsonSerializer.Deserialize<Payload>(body);
+                }
+                catch (Exception e)
+                {
+                    logger.LogError(e, "Deserialize payload error.");
+                    logger.LogInformation("Received un-known body payload, return {bad}.", HttpStatusCode.BadRequest.ToString());
+                    resp.StatusCode = (int)HttpStatusCode.BadRequest;
+                    continue;
+                }
 
                 if (payload is null)
                 {
+                    logger.LogInformation("Received empty body payload, return {bad}.", HttpStatusCode.BadRequest.ToString());
                     resp.StatusCode = (int)HttpStatusCode.BadRequest;
                     continue;
                 }

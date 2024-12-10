@@ -1,9 +1,10 @@
 ﻿using System.Text.Json;
 using System.Text.Json.Serialization;
+using VideoStreamCaptureBot.Impl.Tencent.Protocols;
 using VideoStreamCaptureBot.Impl.Tencent.Protocols.EventContents;
 
-namespace VideoStreamCaptureBot.Impl.Tencent.Protocols.Serialization;
-public class JsonEventContentConverter : JsonConverter<object>
+namespace VideoStreamCaptureBot.Impl.Tencent.Json.Serialization;
+public class JsonPayloadConverter : JsonConverter<object>
 {
     public override object? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {

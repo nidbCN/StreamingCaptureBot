@@ -1,8 +1,9 @@
 ﻿using System.Text.Json.Serialization;
-using VideoStreamCaptureBot.Impl.Tencent.Protocols.Serialization;
+using VideoStreamCaptureBot.Impl.Tencent.Json.Serialization;
 
 namespace VideoStreamCaptureBot.Impl.Tencent.Protocols;
 
+[JsonConverter(typeof(JsonPayloadConverter))]
 public record Payload
 {
     [JsonIgnore]
@@ -17,7 +18,6 @@ public record Payload
     [JsonPropertyName(OperationCodeProp)]
     public required OperationCode OperationCode { get; set; }
 
-    [JsonConverter(typeof(JsonEventContentConverter))]
     [JsonPropertyName(EventContentProp)]
     public required object EventContent { get; set; } = null!;
 
