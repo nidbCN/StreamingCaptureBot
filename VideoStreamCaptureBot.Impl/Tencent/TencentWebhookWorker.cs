@@ -17,7 +17,7 @@ public class TencentWebhookWorker(
     ISignProvider signProvider
     ) : BackgroundService
 {
-    public Func<byte[]> CapturedCommandReceivedInvoke { get; set; }
+    public Func<byte[]>? CapturedCommandReceivedInvoke { get; set; }
 
     protected override Task ExecuteAsync(CancellationToken stoppingToken)
     => Task.Run(async () =>
@@ -88,6 +88,13 @@ public class TencentWebhookWorker(
                 {
                     case OperationCode.HttpCallbackVerify:
                         var verify = payload.GetEventContent<HttpCallbackVerify>();
+
+                        if (verify is null)
+                        {
+                            resp.StatusCode = (int)HttpStatusCode.BadRequest;
+                            break;
+                        }
+
                         var signed = signProvider.Sign(verify.EventTimespan + verify.PlainToken);
                         var hex = signed.ToHex();
 

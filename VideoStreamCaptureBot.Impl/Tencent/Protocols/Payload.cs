@@ -7,7 +7,7 @@ namespace VideoStreamCaptureBot.Impl.Tencent.Protocols;
 public record Payload
 {
     [JsonPropertyName("id")]
-    public string EventId { get; set; }
+    public required string EventId { get; set; }
 
     [JsonPropertyName("op")]
     public OperationCode OperationCode { get; set; }
@@ -19,7 +19,7 @@ public record Payload
     public uint Sequence { get; set; }
 
     [JsonPropertyName("t")]
-    public string EventType { get; set; }
+    public required string EventType { get; set; }
 
     public T? GetEventContent<T>() where T : IEventContent
     => JsonEventContent.Deserialize<T>();

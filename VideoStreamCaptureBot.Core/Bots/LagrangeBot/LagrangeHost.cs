@@ -19,6 +19,7 @@ internal class LagrangeHost(
     ILogger<LagrangeHost> logger,
     IHostApplicationLifetime appLifetime,
     IOptions<BotOption> botOptions,
+    IOptions<LagrangeImplOption> implOptions,
     BotContext botCtx,
     IsolatedStorageFile isoStorage,
     BotController controller)
@@ -50,7 +51,7 @@ internal class LagrangeHost(
         // save device info and keystore
         try
         {
-            await using var deviceInfoFileStream = isoStorage.OpenFile(botOptions.Value.LagrangeBotConfig.DeviceInfoFile, FileMode.OpenOrCreate, FileAccess.Write);
+            await using var deviceInfoFileStream = isoStorage.OpenFile(implOptions.Value.DeviceInfoFile, FileMode.OpenOrCreate, FileAccess.Write);
             await JsonSerializer.SerializeAsync(deviceInfoFileStream, botCtx.UpdateDeviceInfo());
 
             var keyStore = botCtx.UpdateKeystore();
@@ -58,7 +59,7 @@ internal class LagrangeHost(
             // update password hash
             if (string.IsNullOrEmpty(keyStore.PasswordMd5))
             {
-                if (botOptions.Value.LagrangeBotConfig.AccountPasswords?.TryGetValue(keyStore.Uin, out var pwd) ?? false)
+                if (implOptions.Value.AccountPasswords?.TryGetValue(keyStore.Uin, out var pwd) ?? false)
                 {
                     keyStore.PasswordMd5 = pwd.Hashed
                         ? pwd.Password
@@ -66,7 +67,7 @@ internal class LagrangeHost(
                 }
             }
 
-            await using var keyFileStream = isoStorage.OpenFile(botOptions.Value.LagrangeBotConfig.KeyStoreFile, FileMode.OpenOrCreate, FileAccess.Write);
+            await using var keyFileStream = isoStorage.OpenFile(implOptions.Value.KeyStoreFile, FileMode.OpenOrCreate, FileAccess.Write);
             await JsonSerializer.SerializeAsync(keyFileStream, keyStore);
         }
         catch (Exception e)
@@ -84,7 +85,6 @@ internal class LagrangeHost(
         //        new StringContent(@$"Time: `{@event.EventTime}`, Bot `{bot.BotUin}` online\."));
         //}
     }
-
 
     private void ProcessBotOffline(BotContext bot, BotOfflineEvent _)
     {

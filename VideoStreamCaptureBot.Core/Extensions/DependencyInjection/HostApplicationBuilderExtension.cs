@@ -10,27 +10,27 @@ public static class HostApplicationBuilderExtension
 {
     public static IHostApplicationBuilder UseLagrangeBots(this IHostApplicationBuilder builder)
     {
-        var option = builder.Configuration
-            .GetSection(nameof(BotOption))
-            .Get<BotOption>() ?? new();
+        var implOption = builder.Configuration
+            .GetSection(nameof(LagrangeImplOption))
+            .Get<LagrangeImplOption>() ?? new();
 
         var isoStore = IsolatedStorageFile.GetStore(
             IsolatedStorageScope.User | IsolatedStorageScope.Application, null, null);
 
-        var deviceInfo = ReadAsJsonOrDelete<BotDeviceInfo>(isoStore, option.LagrangeBotConfig.DeviceInfoFile)
+        var deviceInfo = ReadAsJsonOrDelete<BotDeviceInfo>(isoStore, implOption.DeviceInfoFile)
                          ?? GenerateInfo();
 
-        var keyStore = ReadAsJsonOrDelete<BotKeystore>(isoStore, option.LagrangeBotConfig.DeviceInfoFile)
+        var keyStore = ReadAsJsonOrDelete<BotKeystore>(isoStore, implOption.DeviceInfoFile)
                        ?? new();
 
         builder.Services.AddSingleton(_
             => isoStore);
         builder.Services.AddSingleton(_
-            => BotFactory.Create(option.LagrangeBotConfig.LagrangeConfig, deviceInfo, keyStore));
+            => BotFactory.Create(implOption.LagrangeConfig, deviceInfo, keyStore));
 
         builder.Services.AddOptions();
-        builder.Services.Configure<BotOption>(
-            builder.Configuration.GetRequiredSection(nameof(BotOption)));
+        builder.Services.Configure<LagrangeImplOption>(
+            builder.Configuration.GetRequiredSection(nameof(LagrangeImplOption)));
 
         builder.Services.AddHostedService<LagrangeHost>();
 

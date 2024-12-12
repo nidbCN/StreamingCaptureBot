@@ -1,6 +1,7 @@
 using VideoStreamCaptureBot.Core;
 using VideoStreamCaptureBot.Core.Codecs;
 using VideoStreamCaptureBot.Core.Configs;
+using VideoStreamCaptureBot.Core.Controllers;
 using VideoStreamCaptureBot.Core.Extensions.DependencyInjection;
 using VideoStreamCaptureBot.Core.Services;
 using VideoStreamCaptureBot.Core.Utils;
@@ -8,8 +9,21 @@ using VideoStreamCaptureBot.Impl.Tencent.Extensions.DependencyInjection;
 
 var builder = Host.CreateApplicationBuilder(args);
 
-//builder.UseLagrangeBots();
-builder.UseTencentBots();
+var botOption = builder.Configuration
+    .GetSection(nameof(BotOption))
+    .Get<BotOption>() ?? new();
+
+switch (botOption.BotImplement)
+{
+    case BotOption.Implement.Lagrange:
+        builder.UseLagrangeBots();
+        break;
+    case BotOption.Implement.Tencent:
+        builder.UseTencentBots();
+        break;
+    default:
+        throw new ArgumentOutOfRangeException(nameof(botOption.BotImplement));
+}
 
 builder.Services.AddWindowsService(s =>
 {
@@ -23,9 +37,10 @@ builder.Services.AddTransient<BinarySizeFormatter>();
 
 builder.Services.AddSingleton<FfmpegLibWebpEncoder>();
 builder.Services.AddSingleton<CaptureService>();
+builder.Services.AddSingleton<BotController>();
 
 builder.Services.AddHostedService<FfMpegConfigureHost>();
-//builder.Services.AddHostedService<HeartBeatWorker>();
+builder.Services.AddHostedService<HeartBeatWorker>();
 
 builder.Services.AddLogging();
 

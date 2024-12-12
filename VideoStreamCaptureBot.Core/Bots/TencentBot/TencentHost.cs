@@ -26,10 +26,13 @@ public class TencentHost(
 
     public Task StartedAsync(CancellationToken cancellationToken)
     {
+        logger.LogInformation("Configuring Tencent bot.");
+
         worker.CapturedCommandReceivedInvoke = () =>
         {
-            var r = controller.HandleCaptureImageCommand(null).Result;
-            return r.Image;
+            var r = controller.HandleCaptureImageCommand(null!)
+                .Result;
+            return r.Image!;
         };
 
         return Task.CompletedTask;

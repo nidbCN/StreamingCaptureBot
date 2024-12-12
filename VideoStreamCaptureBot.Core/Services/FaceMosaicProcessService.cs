@@ -17,7 +17,7 @@ public class FaceMosaicProcessService
     private unsafe AVFrame* _rawFrame;
     private unsafe AVFrame* _processFrame;
     private readonly unsafe AVCodecContext* _bmpEncoderCtx;
-    private readonly unsafe AVPacket* _packet;
+    //private readonly unsafe AVPacket* _packet;
 
     public FaceMosaicProcessService(HttpClient httpClient,
         ILogger<FaceMosaicProcessService> logger, IOptions<StreamOption> streamOptions)
