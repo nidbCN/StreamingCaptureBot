@@ -8,8 +8,8 @@
 		<DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
 		<DockerfileContext>.</DockerfileContext>
 		<ProduceReferenceAssembly>False</ProduceReferenceAssembly>
-		<AssemblyVersion>8.1.6.0</AssemblyVersion>
-		<FileVersion>8.1.6.0</FileVersion>
+		<AssemblyVersion>8.1.6.1</AssemblyVersion>
+		<FileVersion>8.1.6.1</FileVersion>
 	</PropertyGroup>
 
 	<PropertyGroup>
