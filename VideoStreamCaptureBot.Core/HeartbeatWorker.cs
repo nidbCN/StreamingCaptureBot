@@ -18,8 +18,6 @@ public class HeartBeatWorker(ILogger<HeartBeatWorker> logger,
                && (botOptions.Value.NotificationConfig.NotifyWebhookOnHeartbeat
                || botOptions.Value.NotificationConfig.NotifyAdminOnHeartbeat))
         {
-            await Task.Delay(TimeSpan.FromHours(botOptions.Value.NotificationConfig.HeartbeatIntervalHour), stoppingToken);
-
             if (botOptions.Value.NotificationConfig is
                 { NotifyWebhookOnHeartbeat: true, WebhookUrl: not null })
             {
@@ -27,7 +25,7 @@ public class HeartBeatWorker(ILogger<HeartBeatWorker> logger,
 
                 var headers = botOptions.Value.NotificationConfig.WebhookHeaders;
                 var resp = await _httpClient
-                    .PostAsync(url, new StringContent($@"Time: `{DateTime.Now:s}`, {nameof(VideoStreamCaptureBot)} alive\."), stoppingToken);
+                    .PostAsync(url, new StringContent($@"Time: `{DateTime.Now:s}`, {nameof(VideoStreamCaptureBot)} {GetType().Assembly.GetName().Version} alive\."), stoppingToken);
                 if (!resp.IsSuccessStatusCode)
                 {
                     logger.LogInformation("Webhook heartbeat invoked, {code} {msg}.", resp.StatusCode, resp.ReasonPhrase);
@@ -58,6 +56,8 @@ public class HeartBeatWorker(ILogger<HeartBeatWorker> logger,
                     logger.LogError(e, "Bot heartbeat invoked failed, {msg}.", e.Message);
                 }
             }
+
+            await Task.Delay(TimeSpan.FromHours(botOptions.Value.NotificationConfig.HeartbeatIntervalHour), stoppingToken);
         }
     }
 
