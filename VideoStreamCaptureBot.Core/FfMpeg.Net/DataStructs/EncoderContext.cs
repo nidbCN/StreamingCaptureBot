@@ -32,9 +32,11 @@ public class EncoderContext : AvCodecContextWrapper
 
     public static unsafe EncoderContext Create(AVCodec* enc)
     {
+        if (enc is null)
+            throw new ArgumentNullException(nameof(enc));
+
         var ctx = new EncoderContext(enc);
 
-        ctx.PixelFormat = enc->pix_fmts[0];
         ctx.TimeBase = new() { num = 1, den = 25 }; // 设置时间基准
         ctx.FrameRate = new() { num = 25, den = 1 };
 

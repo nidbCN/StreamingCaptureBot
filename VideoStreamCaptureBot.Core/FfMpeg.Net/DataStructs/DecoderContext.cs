@@ -32,8 +32,8 @@ public class DecoderContext : AvCodecContextWrapper
     {
         unsafe
         {
-            var enc = ffmpeg.avcodec_find_decoder_by_name(name);
-            return Create(enc);
+            var dec = ffmpeg.avcodec_find_decoder_by_name(name);
+            return Create(dec);
         }
     }
 
@@ -41,22 +41,22 @@ public class DecoderContext : AvCodecContextWrapper
     {
         unsafe
         {
-            var enc = ffmpeg.avcodec_find_decoder(id);
-            return Create(enc);
+            var dec = ffmpeg.avcodec_find_decoder(id);
+            return Create(dec);
         }
     }
 
-    public static unsafe DecoderContext Create(AVCodec* enc)
+    public static unsafe DecoderContext Create(AVCodec* dec)
     {
-        if (enc is null)
-            throw new ArgumentNullException(nameof(enc));
+        if (dec is null)
+            throw new ArgumentNullException(nameof(dec));
 
-        var ctx = new DecoderContext(enc);
+        var ctx = new DecoderContext(dec);
 
         ctx.TimeBase = new() { num = 1, den = 25 }; // 设置时间基准
         ctx.FrameRate = new() { num = 25, den = 1 };
 
-        return new(enc);
+        return new(dec);
     }
 
 }
