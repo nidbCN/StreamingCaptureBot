@@ -30,6 +30,7 @@ builder.Services.AddWindowsService(s =>
     s.ServiceName = "Live stream capture bot";
 });
 
+builder.Services.Configure<BotOption>(botOption);
 builder.Services.Configure<StreamOption>(
     builder.Configuration.GetRequiredSection(nameof(StreamOption)));
 
