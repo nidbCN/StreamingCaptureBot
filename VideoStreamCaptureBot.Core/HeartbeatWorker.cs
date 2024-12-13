@@ -18,6 +18,9 @@ public class HeartBeatWorker(ILogger<HeartBeatWorker> logger,
                && (botOptions.Value.NotificationConfig.NotifyWebhookOnHeartbeat
                || botOptions.Value.NotificationConfig.NotifyAdminOnHeartbeat))
         {
+            // delay before heartbeat. at the beginning of first loop bot maybe not logged in.
+            await Task.Delay(TimeSpan.FromHours(botOptions.Value.NotificationConfig.HeartbeatIntervalHour), stoppingToken);
+
             if (botOptions.Value.NotificationConfig is
                 { NotifyWebhookOnHeartbeat: true, WebhookUrl: not null })
             {
@@ -56,8 +59,6 @@ public class HeartBeatWorker(ILogger<HeartBeatWorker> logger,
                     logger.LogError(e, "Bot heartbeat invoked failed, {msg}.", e.Message);
                 }
             }
-
-            await Task.Delay(TimeSpan.FromHours(botOptions.Value.NotificationConfig.HeartbeatIntervalHour), stoppingToken);
         }
     }
 

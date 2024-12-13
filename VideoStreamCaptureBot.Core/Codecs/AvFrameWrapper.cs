@@ -2,7 +2,16 @@
 
 namespace VideoStreamCaptureBot.Core.Codecs;
 
-public class AvFrameWrapper(AVFrame frame)
+public unsafe class AvFrameWrapper(AVFrame* frame):IDisposable
 {
-    public AVFrame Value { get; } = frame;
+    public AVFrame* FramePointer { get; } = frame;
+
+    public void Dispose()
+    {
+        var frame = FramePointer;
+        ffmpeg.av_frame_unref(frame);
+        ffmpeg.av_frame_free(&frame);
+
+        GC.SuppressFinalize(this);
+    }
 }

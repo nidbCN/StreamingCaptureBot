@@ -15,7 +15,6 @@ public readonly unsafe struct AvCodecContextWrapper(AVCodecContext* ctx)
 public sealed class CaptureService : IDisposable
 {
     private readonly ILogger<CaptureService> _logger;
-    private readonly IDisposable? _scoop;
     private readonly BinarySizeFormatter _formatter;
     private readonly StreamOption _streamOption;
     private readonly FfmpegLibWebpEncoder _encoder;
@@ -93,8 +92,6 @@ public sealed class CaptureService : IDisposable
         _streamOption = option.Value;
         _encoder = encoder;
         _formatter = formatter;
-
-        _scoop = logger.BeginScope(nameof(CaptureService));
 
         if (_streamOption.Url is null)
             throw new ArgumentNullException(nameof(option), "StreamOption.Url can not be null.");
@@ -181,8 +178,6 @@ public sealed class CaptureService : IDisposable
         ffmpeg.av_frame_free(&pWebpOutputFrame);
         var pPacket = _packet;
         ffmpeg.av_packet_free(&pPacket);
-
-        _scoop?.Dispose();
     }
 
     private TimeSpan FfmpegTimeToTimeSpan(long value, AVRational timebase)
@@ -414,32 +409,35 @@ public sealed class CaptureService : IDisposable
     /// <summary>
     /// 丢弃解码器结果中所有的帧
     /// </summary>
-    private unsafe void FlushDecoderBufferUnsafe()
+    private void FlushDecoderBufferUnsafe()
     {
         var cnt = 0;
-        int result;
-        do
+
+        while (true)
         {
-            result = ffmpeg.avcodec_receive_frame(_decoderCtx, _frame);
-            _logger.LogDebug("Drop frame[{seq}] in decoder queue[{num}] in decoder buffer.", cnt, _decoderCtx->frame_num);
+            unsafe
+            {
+                var result = ffmpeg.avcodec_receive_frame(_decoderCtx, _frame);
+
+                if (result == ffmpeg.AVERROR(ffmpeg.EAGAIN))
+                    break;
+
+                if (result < 0)
+                    _logger.LogError("An error occured during drop frame. {msg}", FfMpegExtension.av_strerror(result));
+
+                _logger.LogDebug("Drop frame[{seq}] in decoder queue[{num}] in decoder buffer.", cnt, _decoderCtx->frame_num);
+            }
+
             cnt++;
-        } while (result != ffmpeg.AVERROR(ffmpeg.EAGAIN));
+        }
 
-        ffmpeg.av_frame_unref(_frame);
-        _logger.LogInformation("Drop all {cnt} frames in decoder buffer.", cnt);
+        unsafe
+        {
+            ffmpeg.av_frame_unref(_frame);
+        }
+
+        _logger.LogInformation("Clean decoder buffer completed, drop {num} frames.", cnt);
     }
-
-    /// <summary>
-    /// 创建转换上下文
-    /// </summary>
-    /// <param name="targetCodecCtx"></param>
-    /// <param name="targetWidth"></param>
-    /// <param name="targetHeight"></param>
-    /// <returns></returns>
-    private unsafe SwsContext* CreateSwsContext(AVCodecContext* targetCodecCtx, int targetWidth, int targetHeight)
-        => ffmpeg.sws_getContext(StreamWidth, StreamHeight, StreamPixelFormat,
-            targetWidth, targetHeight, targetCodecCtx->pix_fmt,
-            ffmpeg.SWS_BICUBIC, null, null, null);
 
     /// <summary>
     /// 截取图片（异步）
@@ -476,10 +474,14 @@ public sealed class CaptureService : IDisposable
                 unsafe
                 {
                     OpenInput();
+
                     var decodedFrame = DecodeNextFrameUnsafe();
+
+                    var decodedFrameWarp = new AvFrameWrapper(decodedFrame);
+
                     CloseInput();
 
-                    var queue = _encoder.Encode(decodedFrame);
+                    var queue = _encoder.Encode(decodedFrameWarp);
                     if (queue.Count > 1)
                     {
                         var bufferSize = queue.Sum(buf => buf.Length);

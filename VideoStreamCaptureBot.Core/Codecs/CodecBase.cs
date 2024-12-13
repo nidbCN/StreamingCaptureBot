@@ -11,8 +11,10 @@ public class CodecBase(ILogger logger, BinarySizeFormatter binarySizeFormat) : I
 
     protected readonly unsafe AVPacket* Packet = ffmpeg.av_packet_alloc();
 
-    public unsafe Queue<byte[]> Encode(AVFrame* frame)
+    public unsafe Queue<byte[]> Encode(AvFrameWrapper rawFrame)
     {
+        var frame = rawFrame.FramePointer;
+
         using (logger.BeginScope(
                    "{name}@0x{address:x16}.{func}",
                    ffmpeg.avcodec_get_name(EncoderCtx->codec_id),
@@ -68,6 +70,7 @@ public class CodecBase(ILogger logger, BinarySizeFormatter binarySizeFormat) : I
 
             scope?.Dispose();
             #endregion
+
             #region 接收
             logger.LogDebug("Try receive packet from decoder.");
 
@@ -117,8 +120,19 @@ public class CodecBase(ILogger logger, BinarySizeFormatter binarySizeFormat) : I
 
             scope?.Dispose();
             #endregion
+
             return linkedBuffer;
         }
+    }
+
+    public unsafe AvFrameWrapper Decode(AVPacket* packet)
+    {
+        throw new NotImplementedException();
+    }
+
+    public unsafe AvFrameWrapper Decode(Queue<byte[]> binaryQueue)
+    {
+        throw new NotImplementedException();
     }
 
     private unsafe int ReceivePacket()

@@ -76,7 +76,7 @@ internal class LagrangeHost(
         }
         finally
         {
-            isoStorage.Close();
+            // isoStorage.Close();
         }
 
         //if (_botOptions.Value.NotificationConfig.NotifyWebhookOnHeartbeat)
@@ -349,6 +349,7 @@ internal class LagrangeHost(
 
     Task IHostedService.StopAsync(CancellationToken cancellationToken)
         => Task.CompletedTask;
+
 
     Task IHostedLifecycleService.StoppedAsync(CancellationToken cancellationToken)
         => Task.CompletedTask;
