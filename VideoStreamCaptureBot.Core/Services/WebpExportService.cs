@@ -1,9 +1,8 @@
 ﻿using FFmpeg.AutoGen.Abstractions;
 using Microsoft.Extensions.Options;
 using VideoStreamCaptureBot.Core.Configs;
-using VideoStreamCaptureBot.Core.Extensions;
-using VideoStreamCaptureBot.Core.Utils;
-using NotImplementedException = System.NotImplementedException;
+using VideoStreamCaptureBot.Core.FfMpeg.Net.DataStructs;
+using VideoStreamCaptureBot.Core.FfMpeg.Net.Extensions;
 
 namespace VideoStreamCaptureBot.Core.Services;
 
@@ -12,7 +11,7 @@ public class WebpExportService : IDisposable
     private readonly ILogger<WebpExportService> _logger;
     private readonly StreamOption _streamOption;
 
-    private readonly unsafe AVCodecContext* _webpEncoderCtx;
+    private readonly EncoderContext _webpEncoderCtx;
 
     public WebpExportService(ILogger<WebpExportService> logger, IOptions<StreamOption> streamOptions)
     {
@@ -22,25 +21,26 @@ public class WebpExportService : IDisposable
 
         unsafe
         {
-            _webpEncoderCtx = FfMpegUtils.CreateCodecCtx(AVCodecID.AV_CODEC_ID_WEBP, config =>
-            {
-                config.Value->pix_fmt = AVPixelFormat.AV_PIX_FMT_YUV420P;
-                config.Value->gop_size = 1;
-                config.Value->thread_count = (int)_streamOption.CodecThreads;
-                config.Value->time_base = new() { den = 1, num = 1000 };
-                config.Value->flags |= ffmpeg.AV_CODEC_FLAG_COPY_OPAQUE;
-                //config.Value->width = StreamWidth;
-                //config.Value->height = StreamHeight;
+            _webpEncoderCtx = EncoderContext.Create(AVCodecID.AV_CODEC_ID_WEBP);
 
-                //ffmpeg.av_opt_set(config.Value->priv_data, "lossless", "0", ffmpeg.AV_OPT_SEARCH_CHILDREN)
-                //  .ThrowExceptionIfError();
-                //ffmpeg.av_opt_set(config.Value->priv_data, "compression_level", "4", ffmpeg.AV_OPT_SEARCH_CHILDREN)
-                //  .ThrowExceptionIfError();
-                ffmpeg.av_opt_set(config.Value->priv_data, "quality", "80", ffmpeg.AV_OPT_SEARCH_CHILDREN)
-                    .ThrowExceptionIfError();
-                ffmpeg.av_opt_set(config.Value->priv_data, "preset", "photo", ffmpeg.AV_OPT_SEARCH_CHILDREN)
-                    .ThrowExceptionIfError();
-            });
+            _webpEncoderCtx.PixelFormat = AVPixelFormat.AV_PIX_FMT_YUV420P;
+            _webpEncoderCtx.UnmanagedPointer->gop_size = 1;
+            _webpEncoderCtx.UnmanagedPointer->thread_count = (int)_streamOption.CodecThreads;
+            _webpEncoderCtx.TimeBase = new() { den = 1, num = 1000 };
+            _webpEncoderCtx.UnmanagedPointer->flags |= ffmpeg.AV_CODEC_FLAG_COPY_OPAQUE;
+            //config.Value->width = StreamWidth;
+            //config.Value->height = StreamHeight;
+
+            //ffmpeg.av_opt_set(config.Value->priv_data, "lossless", "0", ffmpeg.AV_OPT_SEARCH_CHILDREN)
+            //  .ThrowExceptionIfError();
+            //ffmpeg.av_opt_set(config.Value->priv_data, "compression_level", "4", ffmpeg.AV_OPT_SEARCH_CHILDREN)
+            //  .ThrowExceptionIfError();
+            ffmpeg.av_opt_set(_webpEncoderCtx.UnmanagedPointer->priv_data, "quality", "80", ffmpeg.AV_OPT_SEARCH_CHILDREN)
+                .ThrowExceptionIfError();
+            ffmpeg.av_opt_set(_webpEncoderCtx.UnmanagedPointer->priv_data, "preset", "photo", ffmpeg.AV_OPT_SEARCH_CHILDREN)
+                .ThrowExceptionIfError();
+
+            _webpEncoderCtx.Open(_webpEncoderCtx.UnmanagedPointer->codec, null);
         }
 
         #endregion
@@ -52,9 +52,8 @@ public class WebpExportService : IDisposable
     }
 
 
-    public unsafe void Dispose()
+    public void Dispose()
     {
-        var encoderCtx = _webpEncoderCtx;
-        ffmpeg.avcodec_free_context(&encoderCtx);
+        _webpEncoderCtx.Dispose();
     }
 }

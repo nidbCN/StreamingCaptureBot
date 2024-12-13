@@ -1,6 +1,4 @@
-﻿using Lagrange.Core.Common;
-
-namespace VideoStreamCaptureBot.Core.Configs;
+﻿namespace VideoStreamCaptureBot.Core.Configs;
 
 public record BotOption
 {

@@ -1,15 +1,15 @@
 ﻿using System.Runtime.InteropServices;
 using FFmpeg.AutoGen.Abstractions;
 
-namespace VideoStreamCaptureBot.Core.Extensions;
+namespace VideoStreamCaptureBot.Core.FfMpeg.Net.Extensions;
 public static class FfMpegExtension
 {
     public static unsafe string? av_strerror(int error)
     {
         const int bufferSize = 1024;
         var buffer = stackalloc byte[bufferSize];
-        ffmpeg.av_strerror(error, buffer, (ulong)bufferSize);
-        var message = Marshal.PtrToStringAnsi((IntPtr)buffer);
+        ffmpeg.av_strerror(error, buffer, bufferSize);
+        var message = Marshal.PtrToStringAnsi((nint)buffer);
         return message;
     }
 

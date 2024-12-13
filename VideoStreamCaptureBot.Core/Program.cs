@@ -1,8 +1,8 @@
 using VideoStreamCaptureBot.Core;
-using VideoStreamCaptureBot.Core.Codecs;
 using VideoStreamCaptureBot.Core.Configs;
 using VideoStreamCaptureBot.Core.Controllers;
 using VideoStreamCaptureBot.Core.Extensions.DependencyInjection;
+using VideoStreamCaptureBot.Core.FfMpeg.Net.Codecs;
 using VideoStreamCaptureBot.Core.Services;
 using VideoStreamCaptureBot.Core.Utils;
 using VideoStreamCaptureBot.Impl.Tencent.Extensions.DependencyInjection;

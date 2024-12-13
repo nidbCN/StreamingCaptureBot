@@ -2,8 +2,9 @@
 using FFmpeg.AutoGen.Abstractions;
 using Microsoft.Extensions.Options;
 using VideoStreamCaptureBot.Core.Configs;
-using VideoStreamCaptureBot.Core.Extensions;
-using VideoStreamCaptureBot.Core.Utils;
+using VideoStreamCaptureBot.Core.FfMpeg.Net.DataStructs;
+using VideoStreamCaptureBot.Core.FfMpeg.Net.Extensions;
+using VideoStreamCaptureBot.Core.FfMpeg.Net.Utils;
 
 namespace VideoStreamCaptureBot.Core.Services;
 
@@ -16,7 +17,7 @@ public class FaceMosaicProcessService
 
     private unsafe AVFrame* _rawFrame;
     private unsafe AVFrame* _processFrame;
-    private readonly unsafe AVCodecContext* _bmpEncoderCtx;
+    private readonly EncoderContext _bmpEncoderCtx;
     //private readonly unsafe AVPacket* _packet;
 
     public FaceMosaicProcessService(HttpClient httpClient,
@@ -29,20 +30,22 @@ public class FaceMosaicProcessService
         #region 初始化图片编码器
         unsafe
         {
-            _bmpEncoderCtx = FfMpegUtils.CreateCodecCtx(AVCodecID.AV_CODEC_ID_WEBP, config =>
-            {
-                config.Value->pix_fmt = AVPixelFormat.AV_PIX_FMT_YUV420P;
-                config.Value->gop_size = 1;
-                config.Value->thread_count = (int)_streamOption.CodecThreads;
-                config.Value->time_base = new() { den = 1, num = 1000 };
-                config.Value->flags |= ffmpeg.AV_CODEC_FLAG_COPY_OPAQUE;
-                config.Value->width = 1920;
-                config.Value->height = 1080;
+            _bmpEncoderCtx = EncoderContext.Create(AVCodecID.AV_CODEC_ID_WEBP);
 
-                ffmpeg.av_opt_set(config.Value->priv_data, "preset", "photo", ffmpeg.AV_OPT_SEARCH_CHILDREN)
-                    .ThrowExceptionIfError();
-            });
+            _bmpEncoderCtx.PixelFormat = AVPixelFormat.AV_PIX_FMT_YUV420P;
+            _bmpEncoderCtx.UnmanagedPointer->gop_size = 1;
+            _bmpEncoderCtx.UnmanagedPointer->thread_count = (int)_streamOption.CodecThreads;
+            _bmpEncoderCtx.TimeBase = new() { den = 1, num = 1000 };
+            _bmpEncoderCtx.UnmanagedPointer->flags |= ffmpeg.AV_CODEC_FLAG_COPY_OPAQUE;
+            _bmpEncoderCtx.UnmanagedPointer->width = 1920;
+            _bmpEncoderCtx.UnmanagedPointer->height = 1080;
+
+            ffmpeg.av_opt_set(_bmpEncoderCtx.UnmanagedPointer->priv_data, "preset", "photo", ffmpeg.AV_OPT_SEARCH_CHILDREN)
+                .ThrowExceptionIfError();
+
+            _bmpEncoderCtx.Open(_bmpEncoderCtx.UnmanagedPointer->codec, null);
         }
+
         #endregion
     }
 

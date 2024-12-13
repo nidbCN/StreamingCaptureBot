@@ -1,20 +1,20 @@
 ﻿using System.Buffers;
 
-namespace VideoStreamCaptureBot.Core.Codecs;
+namespace VideoStreamCaptureBot.Core.FfMpeg.Net.Codecs;
 
-public class CodecResultStream : Stream
+public class EncodedDataStream : Stream
 {
     private readonly ArrayPool<byte> _pool = ArrayPool<byte>.Shared;
 
     // default 1kb+(128x512b) capacity without copy array reference.
     private readonly List<byte[]> _data = new(128);
 
-    public CodecResultStream() : this(1024)
+    public EncodedDataStream() : this(1024)
     {
 
     }
 
-    public CodecResultStream(int capacity)
+    public EncodedDataStream(int capacity)
     {
         Capacity = capacity;
     }
@@ -43,7 +43,7 @@ public class CodecResultStream : Stream
 
             if (value > _capacity)
             {
-                var blockNum = ((value - _capacity) & 1023) + 1;
+                var blockNum = (value - _capacity & 1023) + 1;
 
                 for (var i = 0; i < blockNum; i++)
                 {
@@ -55,7 +55,7 @@ public class CodecResultStream : Stream
             }
             else
             {
-                var blockNum = ((value - _capacity) & 1023) - 1;
+                var blockNum = (value - _capacity & 1023) - 1;
                 for (var i = blockNum; i >= 0; i++)
                 {
                     var array = _data[i];
@@ -111,10 +111,10 @@ public class CodecResultStream : Stream
                 copied += BlockCopyTo((int)Position + copied, buffer, offset + copied);
 
             var posInSrc = (int)Position + copied;
-            var posInBlock = posInSrc & (_blockSize - 1);
+            var posInBlock = posInSrc & _blockSize - 1;
 
             Buffer.BlockCopy(
-                _data[(posInSrc) >> 9], posInBlock,
+                _data[posInSrc >> 9], posInBlock,
                 buffer, offset + copied, _blockSize - posInBlock);
         }
 
@@ -160,14 +160,14 @@ public class CodecResultStream : Stream
 
     private byte this[int index]
     {
-        get => _data[index >> 9][index & (_blockSize - 1)];
-        set => _data[index >> 9][index & (_blockSize - 1)] = value;
+        get => _data[index >> 9][index & _blockSize - 1];
+        set => _data[index >> 9][index & _blockSize - 1] = value;
     }
 
     private int BlockCopyTo(int offset, byte[] dest, int destOffset)
     {
         var block = _data[offset >> 9];
-        var posInBlock = offset & (_blockSize - 1);
+        var posInBlock = offset & _blockSize - 1;
         Buffer.BlockCopy(block, posInBlock, dest, destOffset, block.Length - posInBlock);
         return block.Length - posInBlock;
     }
@@ -175,7 +175,7 @@ public class CodecResultStream : Stream
     private int BlockCopyFrom(byte[] src, int srcOffset, int offset)
     {
         var block = _data[offset >> 9];
-        var posInBlock = offset & (_blockSize - 1);
+        var posInBlock = offset & _blockSize - 1;
         Buffer.BlockCopy(src, srcOffset, block, posInBlock, _blockSize - posInBlock);
         return block.Length - posInBlock;
     }
@@ -183,7 +183,7 @@ public class CodecResultStream : Stream
     private int BlockFill(byte value, int offset, int count = -1)
     {
         var block = _data[offset >> 9];
-        var posInBlock = offset & (_blockSize - 1);
+        var posInBlock = offset & _blockSize - 1;
 
         if (count == -1)
         {
@@ -226,7 +226,7 @@ public class CodecResultStream : Stream
                 copied += BlockCopyFrom(buffer, offset + copied, (int)Position + copied);
 
             var posInData = (int)Position + copied;
-            var posInBlock = posInData & (_blockSize - 1);
+            var posInBlock = posInData & _blockSize - 1;
 
             Buffer.BlockCopy(
                 buffer, offset + copied,
