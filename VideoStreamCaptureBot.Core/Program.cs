@@ -10,10 +10,9 @@ using VideoStreamCaptureBot.Impl.Tencent.Extensions.DependencyInjection;
 var builder = Host.CreateApplicationBuilder(args);
 
 var botOption = builder.Configuration
-    .GetSection(nameof(BotOption))
-    .Get<BotOption>() ?? new();
+    .GetSection(nameof(BotOption));
 
-switch (botOption.BotImplement)
+switch ((botOption.Get<BotOption>() ?? new()).BotImplement)
 {
     case BotOption.Implement.Lagrange:
         builder.UseLagrangeBots();
@@ -22,7 +21,7 @@ switch (botOption.BotImplement)
         builder.UseTencentBots();
         break;
     default:
-        throw new ArgumentOutOfRangeException(nameof(botOption.BotImplement));
+        throw new ArgumentOutOfRangeException(nameof(BotOption.BotImplement));
 }
 
 builder.Services.AddWindowsService(s =>
