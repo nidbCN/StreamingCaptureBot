@@ -155,9 +155,8 @@ public class FfMpegConfigureHost(
 
         var buffer = stackalloc byte[LineSize];
         var printPrefix = ffmpeg.AV_LOG_SKIP_REPEATED | ffmpeg.AV_LOG_PRINT_LEVEL;
-        var trimedFormat = format.TrimEnd(' ', '\n', '\r');
-
-        logger.LogDebug("Format line for ffmpeg use format `{fmt}`", trimedFormat);
+        var formatSpan = format.AsSpan();
+        var trimedFormat = formatSpan[..^1].ToString();
 
         ffmpeg.av_log_format_line(p0, level, trimedFormat, vl, buffer, LineSize, &printPrefix);
 
