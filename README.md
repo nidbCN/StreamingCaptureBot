@@ -1,6 +1,6 @@
 # StreamingCaptureBot
 
-Build Status: ![Build](https://github.com/nidbCN/StreamingCaptureBot/actions/workflows/test.yml/badge.svg)
+Build Status: ![Build](https://github.com/nidbCN/StreamingCaptureBot/actions/workflows/test.yaml/badge.svg)
 
 ## 文档
 
