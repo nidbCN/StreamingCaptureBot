@@ -174,7 +174,7 @@ public sealed class CaptureService : IDisposable
                     unsafe
                     {
                         _logger.LogInformation(
-                            "Find packet in stream {index}, size:{size}, pts(display):{pts}, dts(decode):{dts}, key frame flag:{containsKey}",
+                            "Packet in stream[{index}] with size:{size}, pts(display):{pts}, dts(decode):{dts}, key frame flag:{containsKey}",
                             _packet.StreamIndex,
                             string.Format(_formatter, "{0}", _packet.Size),
                             _packet.GetPresentationTimeSpan(_decoderCtx.TimeBase).ToString("c"),
@@ -186,7 +186,7 @@ public sealed class CaptureService : IDisposable
                     // 空包
                     if (_packet.Size <= 0)
                     {
-                        _logger.LogWarning("PacketBuffer with invalid size {size}, ignore.",
+                        _logger.LogWarning("Packet with invalid size {size}, ignore.",
                             string.Format(_formatter, "{0}", _packet.Size));
                     }
 
@@ -195,7 +195,7 @@ public sealed class CaptureService : IDisposable
                         // 校验关键帧
                         if ((_packet.UnmanagedPointer->flags & ffmpeg.AV_PKT_FLAG_KEY) == 0x00)
                         {
-                            _logger.LogInformation("PacketBuffer not contains KEY frame, drop.");
+                            _logger.LogInformation("Packet not contains KEY frame, drop.");
                             continue;
                         }
                     }
@@ -203,7 +203,7 @@ public sealed class CaptureService : IDisposable
                     // 校验 PTS
                     if (_packet.PresentationTimeStamp < 0)
                     {
-                        _logger.LogWarning("PacketBuffer pts={pts} < 0, drop.",
+                        _logger.LogWarning("Packet pts={pts} < 0, drop.",
                             _packet.GetPresentationTimeSpan(_decoderCtx.TimeBase));
                         continue;
                     }
@@ -227,7 +227,7 @@ public sealed class CaptureService : IDisposable
                     if (sendResult == 0 || sendResult == ffmpeg.AVERROR_EOF)
                     {
                         // 发送成功
-                        _logger.LogDebug("PacketBuffer sent success, try get decoded frame.");
+                        _logger.LogDebug("Packet sent success, try get decoded frame.");
                         // 获取解码结果
                         decodeResult = _decoderCtx.TryReceivedFrame(ref frame);
                     }
@@ -342,7 +342,8 @@ public sealed class CaptureService : IDisposable
 
         try
         {
-            await Task.Run(FlushDecoderBufferUnsafe, cancellationToken);
+            await Task.Run(() =>
+                FlushDecoderBufferUnsafe(cancellationToken), cancellationToken);
         }
         finally
         {
@@ -353,12 +354,12 @@ public sealed class CaptureService : IDisposable
     /// <summary>
     /// 丢弃解码器结果中所有的帧
     /// </summary>
-    private void FlushDecoderBufferUnsafe()
+    private void FlushDecoderBufferUnsafe(CancellationToken cancellationToken)
     {
         var cnt = 0;
         var frame = _frame;
 
-        while (true)
+        while (!cancellationToken.IsCancellationRequested)
         {
             unsafe
             {
