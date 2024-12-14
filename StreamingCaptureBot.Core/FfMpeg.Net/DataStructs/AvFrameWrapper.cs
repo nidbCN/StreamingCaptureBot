@@ -56,7 +56,7 @@ public class AvFrameWrapper : WrapperBase<AVFrame>
     {
         unsafe
         {
-            return $"Frame@0x{UnmanagedPointer->buf.ToArray().GetHashCode():x16}";
+            return $"Frame@0x{UnmanagedPointer->buf.ToArray().GetHashCode():x8}";
         }
     }
 
