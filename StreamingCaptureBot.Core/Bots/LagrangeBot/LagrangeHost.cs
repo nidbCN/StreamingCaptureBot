@@ -23,6 +23,8 @@ internal class LagrangeHost(
     IOptions<LagrangeImplOption> implOptions,
     BotContext botCtx,
     IsolatedStorageFile isoStorage,
+    BotKeystore botKeystore,
+    BotDeviceInfo botDeviceInfo,
     BotController controller)
     : IHostedLifecycleService
 {
@@ -52,7 +54,9 @@ internal class LagrangeHost(
         // save device info and keystore
         try
         {
-            logger.LogDebug("Save {name}.", nameof(BotDeviceInfo));
+            var deviceInfo = botCtx.UpdateDeviceInfo();
+
+            logger.LogDebug("{name} updated {isUpdated}, save.", nameof(BotDeviceInfo), deviceInfo == botDeviceInfo);
             await using var deviceInfoFileStream = isoStorage.OpenFile(implOptions.Value.DeviceInfoFile, FileMode.Create, FileAccess.Write);
             await JsonSerializer.SerializeAsync(deviceInfoFileStream, botCtx.UpdateDeviceInfo());
 
@@ -189,7 +193,20 @@ internal class LagrangeHost(
         var loggedIn = false;
         var keyStore = botCtx.UpdateKeystore();
 
-        logger.LogDebug("Get keystore for bot {id}, start login.", keyStore.Uin);
+        if (logger.IsEnabled(LogLevel.Debug))
+        {
+            var option = new JsonSerializerOptions
+            {
+                WriteIndented = true,
+            };
+
+            logger.LogDebug("Bot context keyStore: `{key1}`, keyStore `{key2}`, address matched: {matched}.",
+                JsonSerializer.Serialize(keyStore, option),
+                JsonSerializer.Serialize(botKeystore, option),
+                keyStore == botKeystore);
+
+            logger.LogDebug("Get keystore for bot {id}, start login.", keyStore.Uin);
+        }
 
         // password Login
         if (keyStore.Uin != 0 &&

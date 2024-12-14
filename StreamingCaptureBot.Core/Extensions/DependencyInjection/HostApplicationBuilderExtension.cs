@@ -28,6 +28,9 @@ public static class HostApplicationBuilderExtension
         builder.Services.AddSingleton(_
             => BotFactory.Create(implOption.LagrangeConfig, deviceInfo, keyStore));
 
+        builder.Services.AddSingleton(_ => deviceInfo);
+        builder.Services.AddSingleton(_ => keyStore);
+
         builder.Services.Configure<LagrangeImplOption>(
             builder.Configuration.GetRequiredSection(nameof(LagrangeImplOption)));
 

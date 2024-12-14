@@ -156,6 +156,8 @@ public class FfMpegConfigureHost(
         var buffer = stackalloc byte[LineSize];
         var printPrefix = ffmpeg.AV_LOG_SKIP_REPEATED | ffmpeg.AV_LOG_PRINT_LEVEL;
 
+        logger.Debug("Format line for ffmpeg use format `{fmt}`", format);
+
         ffmpeg.av_log_format_line(p0, level, format, vl, buffer, LineSize, &printPrefix);
 
         // count string
