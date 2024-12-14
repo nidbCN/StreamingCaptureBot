@@ -2,7 +2,7 @@
 # Edit at https://www.toptal.com/developers/gitignore?templates=visualstudio,windows,linux,aspnetcore,dotnetcore
 IsolatedStorage/
 appsettings.json
-VideoStreamCaptureBot.Base/ffmpeg/
+StreamingCaptureBot.Base/ffmpeg/
 **/appsettings.*.json
 
 face-detection-yolo/yolov8m.pt

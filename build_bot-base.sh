@@ -1,6 +1,6 @@
 #!/usr/bin/bash
 
-FF_REPO="./VideoStreamCaptureBot.Base/ffmpeg"
+FF_REPO="./StreamingCaptureBot.Base/ffmpeg"
 
 if [ -d "$FF_REPO" ]; then
     echo "ffmpeg has been cloned."
@@ -17,4 +17,4 @@ fi
 IMAGE_NAME="registry.cn-beijing.aliyuncs.com/nidb-cr/camera-capture-bot-base"
 IMAGE_TAG="${IMAGE_NAME}:${VERSION}"
 
-docker build ./VideoStreamCaptureBot.Base -t "$IMAGE_TAG"
+docker build ./StreamingCaptureBot.Base -t "$IMAGE_TAG"

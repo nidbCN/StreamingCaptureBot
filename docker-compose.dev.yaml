@@ -14,4 +14,4 @@ services:
 
 configs:
   appsettings:
-    file: ./VideoStreamCaptureBot.Core/appsettings.json
+    file: ./StreamingCaptureBot.Core/appsettings.json
