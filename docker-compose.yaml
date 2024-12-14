@@ -1,5 +1,5 @@
 services:
-  bot:
+  app:
     image: registry.cn-beijing.aliyuncs.com/nidb-cr/streaming-capture-bot:git
     tty: true
     stdin_open: true
