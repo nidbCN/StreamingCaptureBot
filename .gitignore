@@ -5,7 +5,10 @@ appsettings.json
 StreamingCaptureBot.Base/ffmpeg/
 **/appsettings.*.json
 
-face-detection-yolo/yolov8m.pt
+StreamingCaptureBot.FaceDetection/yolov8m.pt
+StreamingCaptureBot.FaceDetection/valid
+StreamingCaptureBot.FaceDetection/test
+StreamingCaptureBot.FaceDetection/train
 
 ### ASPNETCore ###
 ## Ignore Visual Studio temporary files, build results, and
