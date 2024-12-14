@@ -52,13 +52,9 @@ internal class LagrangeHost(
         // save device info and keystore
         try
         {
-            var deviceInfo = botCtx.UpdateDeviceInfo();
-
-            logger.LogDebug("{name} updated {isUpdated}, save.", nameof(BotDeviceInfo), deviceInfo == botDeviceInfo);
             await using var deviceInfoFileStream = isoStorage.OpenFile(implOptions.Value.DeviceInfoFile, FileMode.Create, FileAccess.Write);
             await JsonSerializer.SerializeAsync(deviceInfoFileStream, botCtx.UpdateDeviceInfo());
 
-            logger.LogDebug("Save {name}.", nameof(BotKeystore));
             var keyStore = botCtx.UpdateKeystore();
 
             // update password hash
@@ -95,8 +91,7 @@ internal class LagrangeHost(
 
         appLifetime.StopApplication();
     }
-
-
+    
     private async Task ProcessMessage(MessageChain message, BotContext thisBot)
     {
         var isGroup = message.GroupUin is not null;
