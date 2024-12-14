@@ -59,7 +59,10 @@ public static class HostApplicationBuilderExtension
     private static T? ReadAsJsonOrDelete<T>(IsolatedStorageFile handler, string filename) where T : new()
     {
         if (!handler.FileExists(filename))
+        {
+            Console.WriteLine("File {0} not exists, return new.", filename);
             return default;
+        }
 
         try
         {
