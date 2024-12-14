@@ -18,54 +18,56 @@ public class HeartBeatWorker(ILogger<HeartBeatWorker> logger,
                && (botOptions.Value.NotificationConfig.NotifyWebhookOnHeartbeat
                || botOptions.Value.NotificationConfig.NotifyAdminOnHeartbeat))
         {
+            var assemblyName = GetType().Assembly.GetName();
+            var msg = $"Bot {botCtx.BotName}@{botCtx.BotUin} running. Time: `{DateTime.Now:F}`, Program: {assemblyName.Name} {assemblyName.Version}.";
+
             // delay before heartbeat. at the beginning of first loop bot maybe not logged in.
             await Task.Delay(TimeSpan.FromHours(botOptions.Value.NotificationConfig.HeartbeatIntervalHour), stoppingToken);
 
             if (botOptions.Value.NotificationConfig is
                 { NotifyWebhookOnHeartbeat: true, WebhookUrl: not null })
-            {
-                var url = botOptions.Value.NotificationConfig.WebhookUrl!;
-
-                var headers = botOptions.Value.NotificationConfig.WebhookHeaders;
-                var resp = await _httpClient
-                    .PostAsync(url, new StringContent($@"Time: `{DateTime.Now:s}`, {nameof(VideoStreamCaptureBot)} {GetType().Assembly.GetName().Version} alive\."), stoppingToken);
-                if (!resp.IsSuccessStatusCode)
-                {
-                    logger.LogInformation("Webhook heartbeat invoked, {code} {msg}.", resp.StatusCode, resp.ReasonPhrase);
-                }
-                else
-                {
-                    logger.LogWarning("Webhook heartbeat invoked failed, {code} {msg}.", resp.StatusCode, resp.ReasonPhrase);
-                }
-            }
+                await ProcessWebhookHeartbeatAsync(msg, stoppingToken);
 
             if (botOptions.Value.NotificationConfig.NotifyAdminOnHeartbeat)
-            {
-                try
-                {
-                    await Parallel.ForEachAsync(botOptions.Value.AdminAccounts, stoppingToken,
-                        async (account, _) =>
-                    {
-                        var message = MessageBuilder
-                            .Friend(account)
-                            .Text($"Time: {DateTime.Now:s}, {nameof(VideoStreamCaptureBot)} alive.")
-                            .Build();
-                        await botCtx.SendMessage(message);
-                        logger.LogInformation("Bot heartbeat invoked.");
-                    });
-                }
-                catch (Exception e)
-                {
-                    logger.LogError(e, "Bot heartbeat invoked failed, {msg}.", e.Message);
-                }
-            }
+                await ProcessBotHeartbeatAsync(msg, stoppingToken);
         }
     }
 
-    public override Task StopAsync(CancellationToken cancellationToken)
+    private async Task ProcessWebhookHeartbeatAsync(string message, CancellationToken stoppingToken)
     {
-        botCtx.Dispose();
+        var url = botOptions.Value.NotificationConfig.WebhookUrl!;
 
-        return base.StopAsync(cancellationToken);
+        var headers = botOptions.Value.NotificationConfig.WebhookHeaders;
+        var resp = await _httpClient
+            .PostAsync(url, new StringContent(message), stoppingToken);
+        if (!resp.IsSuccessStatusCode)
+        {
+            logger.LogInformation("Webhook heartbeat invoked, {code} {msg}.", resp.StatusCode, resp.ReasonPhrase);
+        }
+        else
+        {
+            logger.LogWarning("Webhook heartbeat invoked failed, {code} {msg}.", resp.StatusCode, resp.ReasonPhrase);
+        }
+    }
+
+    private async Task ProcessBotHeartbeatAsync(string message, CancellationToken stoppingToken)
+    {
+        try
+        {
+            await Parallel.ForEachAsync(botOptions.Value.AdminAccounts, stoppingToken,
+                async (account, _) =>
+                {
+                    var botMessage = MessageBuilder
+                        .Friend(account)
+                        .Text(message)
+                        .Build();
+                    await botCtx.SendMessage(botMessage);
+                    logger.LogInformation("Bot heartbeat invoked.");
+                });
+        }
+        catch (Exception e)
+        {
+            logger.LogError(e, "Bot heartbeat invoked failed, {msg}.", e.Message);
+        }
     }
 }

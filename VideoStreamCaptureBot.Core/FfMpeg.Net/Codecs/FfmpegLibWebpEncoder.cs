@@ -26,11 +26,14 @@ public class FfmpegLibWebpEncoder : CodecBase
 
             CodecCtx->flags |= ffmpeg.AV_CODEC_FLAG_COPY_OPAQUE;
 
-            ffmpeg.av_opt_set(CodecCtx->priv_data,
-                    "preset", "photo", ffmpeg.AV_OPT_SEARCH_CHILDREN)
-                .ThrowExceptionIfError();
+            AVDictionary* openOptions = null;
+            ffmpeg.av_dict_set(&openOptions, "preset", "photo", 0);
 
-            ffmpeg.avcodec_open2(CodecCtx, codec, null)
+            //ffmpeg.av_opt_set(CodecCtx->priv_data,
+            //        "preset", "photo", ffmpeg.AV_OPT_SEARCH_CHILDREN)
+            //    .ThrowExceptionIfError();
+
+            ffmpeg.avcodec_open2(CodecCtx, codec, &openOptions)
                 .ThrowExceptionIfError();
         }
     }
