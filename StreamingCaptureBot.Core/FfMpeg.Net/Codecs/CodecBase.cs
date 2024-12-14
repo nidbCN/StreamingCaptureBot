@@ -79,7 +79,7 @@ public class CodecBase(ILogger logger, BinarySizeFormatter binarySizeFormat) : I
 
             for (ret = ReceivePacket(); ret == 0 && packet->size > 0; ret = ReceivePacket())
             {
-                scope = logger.BeginScope($"packet@{packet->buf->GetHashCode()}");
+                scope = logger.BeginScope($"packet@0x{packet->buf->GetHashCode():x8}");
                 logger.LogInformation("Received packet from decoder, size:{size}.",
                     string.Format(binarySizeFormat, "{0}", packet->size));
 

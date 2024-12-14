@@ -64,7 +64,7 @@ public class AvPacketWrapper : WrapperBase<AVPacket>
     {
         unsafe
         {
-            return $"Packet@0x{UnmanagedPointer->buf->GetHashCode():x16}";
+            return $"Packet@0x{UnmanagedPointer->buf->GetHashCode():x8}";
         }
     }
 
