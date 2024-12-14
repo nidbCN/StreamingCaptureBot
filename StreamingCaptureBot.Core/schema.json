@@ -25,7 +25,7 @@
           "type": "integer"
         },
         "CodecThreads": {
-          "description": "recommend `<cpus>`, default 8, threads to decode and encode",
+          "description": "recommend `<cpus>`, default auto-detect, threads to decode and encode, negivate or zero for auto-detect",
           "type": "integer"
         },
         "LogLevel": {
@@ -38,37 +38,9 @@
       ]
     },
     "BotOption": {
-      "description": "tencent qq bot configurations.",
+      "description": "qq bot configurations.",
       "type": "object",
       "properties": {
-        "KeyStoreFile": {
-          "description": "default keystore.json, located at located at `~/AppData/Local/IsolatedStorage/<random>/<random>/Url.<random>/AppFiles` on windows or `~/.local/share/IsolatedStorage/` on Lin/Unix",
-          "type": "string"
-        },
-        "DeviceInfoFile": {
-          "description": "default deviceInfo.json, located as same as `KeyStoreFile`",
-          "type": "string"
-        },
-        "AccountPasswords": {
-          "description": "bot accounts password dict, key: account uin, value: password info.",
-          "type": "object",
-          "properties": {
-            "uin": {
-              "description": "bot account uin.",
-              "type": "object",
-              "properties": {
-                "Hashed": {
-                  "description": "set true if you have hashed your password string to md5(lower)",
-                  "type": "boolean"
-                },
-                "Password":{
-                  "description": "bot account password, text or md5.",
-                  "type":"string"
-                }
-              }
-            }
-          }
-        },
         "AllowedGroups": {
           "description": "allowed groups, `null` for enable all, `[]` for disable all.",
           "type": "array",
@@ -132,10 +104,49 @@
               }
             }
           },
+          "BotImplement": {
+            "description": "default Lagrange, bot implement, lagrange or tencent offical",
+            "type": "integer"
+          },
           "required": []
+        }
+      },
+      "required": []
+    },
+    "LagrangeImplOption": {
+      "description": "lagrange bot implication configurations.",
+      "type": "object",
+      "properties": {
+        "KeyStoreFile": {
+          "description": "default keystore.json, located at located at `~/AppData/Local/IsolatedStorage/<random>/<random>/Url.<random>/AppFiles` on windows or `~/.local/share/IsolatedStorage/` on Lin/Unix",
+          "type": "string"
         },
-        "FrameworkConfig": {
-          "description": "qq bot framework config, see https://lagrangedev.github.io/Lagrange.Doc/Lagrange.Core/CreateBot/#botconfig-%E9%85%8D%E7%BD%AE%E7%B1%BB",
+        "DeviceInfoFile": {
+          "description": "default deviceInfo.json, located as same as `KeyStoreFile`",
+          "type": "string"
+        },
+        "AccountPasswords": {
+          "description": "bot accounts password dict, key: account uin, value: password info.",
+          "type": "object",
+          "properties": {
+            "uin": {
+              "description": "bot account uin.",
+              "type": "object",
+              "properties": {
+                "Hashed": {
+                  "description": "set true if you have hashed your password string to md5(lower)",
+                  "type": "boolean"
+                },
+                "Password": {
+                  "description": "bot account password, text or md5.",
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "LagrangeConfig": {
+          "description": "framework config, see https://lagrangedev.github.io/Lagrange.Doc/Lagrange.Core/CreateBot/#botconfig-%E9%85%8D%E7%BD%AE%E7%B1%BB",
           "type": "object",
           "properties": {
             "AutoReconnect": {
@@ -157,8 +168,7 @@
           "additionalProperties": true,
           "required": []
         }
-      },
-      "required": []
+      }
     }
   },
   "required": [
