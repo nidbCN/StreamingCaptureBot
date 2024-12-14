@@ -6,5 +6,5 @@ public record StreamOption
     public required Uri Url { get; set; }
     public uint ConnectTimeout { get; set; } = 1200;
     public uint CodecTimeout { get; set; } = 5000;
-    public uint CodecThreads { get; set; } = 4;
+    public uint CodecThreads { get; set; } = (uint)Environment.ProcessorCount;
 }

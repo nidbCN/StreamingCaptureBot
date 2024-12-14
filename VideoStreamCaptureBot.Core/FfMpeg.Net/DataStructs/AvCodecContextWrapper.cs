@@ -16,14 +16,7 @@ public class AvCodecContextWrapper : WrapperBase<AVCodecContext>
     {
         get
         {
-            AVCodecID id;
-            unsafe { id = UnmanagedPointer->codec_id; }
-            return id;
-        }
-
-        set
-        {
-            unsafe { UnmanagedPointer->codec_id = value; }
+            unsafe { return UnmanagedPointer->codec_id; }
         }
     }
 
@@ -61,15 +54,28 @@ public class AvCodecContextWrapper : WrapperBase<AVCodecContext>
     {
         get
         {
-            AVPixelFormat fmt;
-            unsafe { fmt = UnmanagedPointer->pix_fmt; }
-
-            return fmt;
+            unsafe { return UnmanagedPointer->pix_fmt; }
         }
 
         set
         {
             unsafe { UnmanagedPointer->pix_fmt = value; }
+        }
+    }
+
+    public int ThreadCount
+    {
+        get
+        {
+            unsafe { return UnmanagedPointer->thread_count; }
+        }
+
+        set
+        {
+            if (value <= 0)
+                unsafe { UnmanagedPointer->thread_count = Environment.ProcessorCount; }
+            else
+                unsafe { UnmanagedPointer->thread_count = value; }
         }
     }
 
