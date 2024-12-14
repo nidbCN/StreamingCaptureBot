@@ -1,6 +1,6 @@
 #!/usr/bin/bash
 
-git submodule foreach git pull
+FF_REPO="./StreamingCaptureBot.Base/ffmpeg"
 
 VERSION=$(cd $FF_REPO && git describe --tags | awk -F'-' '{print $1 "-" $2}')
 if [[ -z "$VERSION" ]]; then

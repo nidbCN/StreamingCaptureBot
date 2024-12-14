@@ -1,7 +1,6 @@
 services:
-  StreamingCaptureBot:
-    image: registry.cn-beijing.aliyuncs.com/nidb-cr/camera-capture-bot:git
-    container_name: camera-capture-bot
+  bot:
+    image: registry.cn-beijing.aliyuncs.com/nidb-cr/streaming-capture-bot:git
     tty: true
     stdin_open: true
     environment:
