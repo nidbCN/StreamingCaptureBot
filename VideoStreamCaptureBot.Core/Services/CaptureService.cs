@@ -66,9 +66,9 @@ public sealed class CaptureService : IDisposable
         ffmpeg.avcodec_parameters_to_context(_decoderCtx.UnmanagedPointer, _inputFormatCtx->streams[_streamIndex]->codecpar)
             .ThrowExceptionIfError();
 
-        _decoderCtx.UnmanagedPointer->thread_count = (int)_streamOption.CodecThreads;
-        _decoderCtx.UnmanagedPointer->flags |= ffmpeg.AV_CODEC_FLAG_LOW_DELAY;
-        _decoderCtx.UnmanagedPointer->skip_frame = AVDiscard.AVDISCARD_NONKEY;
+        _decoderCtx.ThreadCount = (int)_streamOption.CodecThreads;
+        _decoderCtx.Flags |= AvCodecContextWrapper.CodecFlag.LowDelay;
+        _decoderCtx.SkipFrame = AVDiscard.AVDISCARD_NONKEY;
 
         _decoderCtx.Open(decoder, null);
 
@@ -84,8 +84,8 @@ public sealed class CaptureService : IDisposable
         // 设置输入流信息
         StreamDecoderName = ffmpeg.avcodec_get_name(decoder->id);
         StreamPixelFormat = pixFormat;
-        StreamWidth = _decoderCtx.UnmanagedPointer->width;
-        StreamHeight = _decoderCtx.UnmanagedPointer->height;
+        StreamWidth = _decoderCtx.Width;
+        StreamHeight = _decoderCtx.Height;
 
         CloseInput();
         #endregion

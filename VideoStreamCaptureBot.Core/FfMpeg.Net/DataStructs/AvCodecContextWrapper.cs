@@ -35,6 +35,40 @@ public class AvCodecContextWrapper : WrapperBase<AVCodecContext>
         }
     }
 
+    public AVRational SampleAspectRatio
+    {
+        get
+        {
+            unsafe { return UnmanagedPointer->sample_aspect_ratio; }
+        }
+    }
+
+    public int Width
+    {
+        get
+        {
+            unsafe { return UnmanagedPointer->width; }
+        }
+
+        set
+        {
+            unsafe { UnmanagedPointer->height = value; }
+        }
+    }
+
+    public int Height
+    {
+        get
+        {
+            unsafe { return UnmanagedPointer->height; }
+        }
+
+        set
+        {
+            unsafe { UnmanagedPointer->height = value; }
+        }
+    }
+
     public AVRational FrameRate
     {
         get
@@ -79,6 +113,19 @@ public class AvCodecContextWrapper : WrapperBase<AVCodecContext>
         }
     }
 
+    public AVDiscard SkipFrame
+    {
+        get
+        {
+            unsafe { return UnmanagedPointer->skip_frame; }
+        }
+
+        set
+        {
+            unsafe { UnmanagedPointer->skip_frame = value; }
+        }
+    }
+
     public long FrameNumber
     {
         get
@@ -87,6 +134,19 @@ public class AvCodecContextWrapper : WrapperBase<AVCodecContext>
             {
                 return UnmanagedPointer->frame_num;
             }
+        }
+    }
+
+    public CodecFlag Flags
+    {
+        get
+        {
+            unsafe { return (CodecFlag)UnmanagedPointer->flags; }
+        }
+
+        set
+        {
+            unsafe { UnmanagedPointer->flags = (int)value; }
         }
     }
 
@@ -122,5 +182,30 @@ public class AvCodecContextWrapper : WrapperBase<AVCodecContext>
         base.Dispose();
 
         GC.SuppressFinalize(this);
+    }
+
+    [Flags]
+    public enum CodecFlag
+    {
+        AcPred = ffmpeg.AV_CODEC_FLAG_AC_PRED,
+        BitExact = ffmpeg.AV_CODEC_FLAG_BITEXACT,
+        //ClosedGop = ffmpeg.AV_CODEC_FLAG_CLOSED_GOP, // a 64bit flag
+        CopyOpaques = ffmpeg.AV_CODEC_FLAG_COPY_OPAQUE,
+        DropChanged = ffmpeg.AV_CODEC_FLAG_DROPCHANGED,
+        FrameDuration = ffmpeg.AV_CODEC_FLAG_FRAME_DURATION,
+        GlobalHeader = ffmpeg.AV_CODEC_FLAG_GLOBAL_HEADER,
+        Gray = ffmpeg.AV_CODEC_FLAG_GRAY,
+        InterlacedDct = ffmpeg.AV_CODEC_FLAG_INTERLACED_DCT,
+        InterlacedMe = ffmpeg.AV_CODEC_FLAG_INTERLACED_ME,
+        LoopFilter = ffmpeg.AV_CODEC_FLAG_LOOP_FILTER,
+        LowDelay = ffmpeg.AV_CODEC_FLAG_LOW_DELAY,
+        M = ffmpeg.AV_CODEC_FLAG_OUTPUT_CORRUPT,
+        Pass1 = ffmpeg.AV_CODEC_FLAG_PASS1,
+        Pass2 = ffmpeg.AV_CODEC_FLAG_PASS2,
+        Psnr = ffmpeg.AV_CODEC_FLAG_PSNR,
+        Qpel = ffmpeg.AV_CODEC_FLAG_QPEL,
+        QScale = ffmpeg.AV_CODEC_FLAG_QSCALE,
+        ReconFrame = ffmpeg.AV_CODEC_FLAG_RECON_FRAME,
+        UnAligned = ffmpeg.AV_CODEC_FLAG_UNALIGNED
     }
 }

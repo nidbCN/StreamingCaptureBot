@@ -12,6 +12,16 @@ public class EncoderContext : AvCodecContextWrapper
     {
     }
 
+    public new AVRational SampleAspectRatio
+    {
+        get => base.SampleAspectRatio;
+
+        set
+        {
+            unsafe { UnmanagedPointer->sample_aspect_ratio = value; }
+        }
+    }
+
     public static EncoderContext Create(string name)
     {
         unsafe
