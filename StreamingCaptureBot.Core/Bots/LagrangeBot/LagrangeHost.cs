@@ -23,8 +23,6 @@ internal class LagrangeHost(
     IOptions<LagrangeImplOption> implOptions,
     BotContext botCtx,
     IsolatedStorageFile isoStorage,
-    BotKeystore botKeystore,
-    BotDeviceInfo botDeviceInfo,
     BotController controller)
     : IHostedLifecycleService
 {
@@ -192,23 +190,6 @@ internal class LagrangeHost(
     {
         var loggedIn = false;
         var keyStore = botCtx.UpdateKeystore();
-
-        #region Key Store Debug
-        if (logger.IsEnabled(LogLevel.Debug))
-        {
-            var option = new JsonSerializerOptions
-            {
-                WriteIndented = true,
-            };
-
-            logger.LogDebug("Bot context keyStore: `{key1}`, keyStore `{key2}`, address matched: {matched}.",
-                JsonSerializer.Serialize(keyStore, option),
-                JsonSerializer.Serialize(botKeystore, option),
-                keyStore == botKeystore);
-
-            logger.LogDebug("Get keystore for bot {id}, start login.", keyStore.Uin);
-        }
-        #endregion
 
         // password Login
         if (keyStore.Uin != 0 &&

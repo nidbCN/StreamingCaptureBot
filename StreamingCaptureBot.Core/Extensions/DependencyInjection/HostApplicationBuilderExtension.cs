@@ -20,16 +20,13 @@ public static class HostApplicationBuilderExtension
         var deviceInfo = ReadAsJsonOrDelete<BotDeviceInfo>(isoStore, implOption.DeviceInfoFile)
                          ?? GenerateInfo();
 
-        var keyStore = ReadAsJsonOrDelete<BotKeystore>(isoStore, implOption.DeviceInfoFile)
+        var keyStore = ReadAsJsonOrDelete<BotKeystore>(isoStore, implOption.KeyStoreFile)
                        ?? new();
 
         builder.Services.AddSingleton(_
             => isoStore);
         builder.Services.AddSingleton(_
             => BotFactory.Create(implOption.LagrangeConfig, deviceInfo, keyStore));
-
-        builder.Services.AddSingleton(_ => deviceInfo);
-        builder.Services.AddSingleton(_ => keyStore);
 
         builder.Services.Configure<LagrangeImplOption>(
             builder.Configuration.GetRequiredSection(nameof(LagrangeImplOption)));
