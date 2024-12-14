@@ -3,6 +3,7 @@ using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Lagrange.Core;
+using Lagrange.Core.Common;
 using Lagrange.Core.Common.Interface.Api;
 using Lagrange.Core.Event.EventArg;
 using Lagrange.Core.Message;
@@ -46,14 +47,16 @@ internal class LagrangeHost(
 
     private async Task ProcessBotOnline(BotContext bot, BotOnlineEvent _)
     {
-        logger.LogInformation("Login Success! Bot {id} online.", bot.BotUin);
+        logger.LogInformation("Login Success! Bot `{name}@{id}` online.", bot.BotName, bot.BotUin);
 
         // save device info and keystore
         try
         {
-            await using var deviceInfoFileStream = isoStorage.OpenFile(implOptions.Value.DeviceInfoFile, FileMode.OpenOrCreate, FileAccess.Write);
+            logger.LogDebug("Save {name}.", nameof(BotDeviceInfo));
+            await using var deviceInfoFileStream = isoStorage.OpenFile(implOptions.Value.DeviceInfoFile, FileMode.Create, FileAccess.Write);
             await JsonSerializer.SerializeAsync(deviceInfoFileStream, botCtx.UpdateDeviceInfo());
 
+            logger.LogDebug("Save {name}.", nameof(BotKeystore));
             var keyStore = botCtx.UpdateKeystore();
 
             // update password hash
@@ -61,34 +64,25 @@ internal class LagrangeHost(
             {
                 if (implOptions.Value.AccountPasswords?.TryGetValue(keyStore.Uin, out var pwd) ?? false)
                 {
+                    logger.LogDebug("Find account password for `{id}`, save password to {name}.", keyStore.Uin, nameof(BotKeystore));
                     keyStore.PasswordMd5 = pwd.Hashed
                         ? pwd.Password
                         : new(Encoding.UTF8.GetBytes(pwd.Password).ToMd5Hex());
                 }
             }
 
-            await using var keyFileStream = isoStorage.OpenFile(implOptions.Value.KeyStoreFile, FileMode.OpenOrCreate, FileAccess.Write);
+            await using var keyFileStream = isoStorage.OpenFile(implOptions.Value.KeyStoreFile, FileMode.Create, FileAccess.Write);
             await JsonSerializer.SerializeAsync(keyFileStream, keyStore);
         }
         catch (Exception e)
         {
             logger.LogError(e, "Save device info and key files failed.");
         }
-        finally
-        {
-            // isoStorage.Close();
-        }
-
-        //if (_botOptions.Value.NotificationConfig.NotifyWebhookOnHeartbeat)
-        //{
-        //    await _httpClient.PostAsync(_botOptions.Value.NotificationConfig.WebhookUrl,
-        //        new StringContent(@$"Time: `{@event.EventTime}`, Bot `{bot.BotUin}` online\."));
-        //}
     }
 
     private void ProcessBotOffline(BotContext bot, BotOfflineEvent _)
     {
-        logger.LogError("Bot {id} offline.", bot.BotUin);
+        logger.LogError("Bot `{name}@{id}` offline.", bot.BotName, bot.BotUin);
 
         //    if (!_botOptions.Value.NotificationConfig.NotifyWebhookOnHeartbeat) return;
 
@@ -194,6 +188,8 @@ internal class LagrangeHost(
     {
         var loggedIn = false;
         var keyStore = botCtx.UpdateKeystore();
+
+        logger.LogDebug("Get keystore for bot {id}, start login.", keyStore.Uin);
 
         // password Login
         if (keyStore.Uin != 0 &&
