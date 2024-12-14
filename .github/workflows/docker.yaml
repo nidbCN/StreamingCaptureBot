@@ -26,7 +26,10 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           push: true
-          tags: "git"
+          tags: 
+            - registry.cn-beijing.aliyuncs.com/nidb-cr/streaming-capture-bot:git
           provenance: true
           sbom: true
-          platforms: ["linux/amd64", "windows/amd64"]
+          platforms: 
+            - linux/amd64
+            - windows/amd64
