@@ -193,6 +193,7 @@ internal class LagrangeHost(
         var loggedIn = false;
         var keyStore = botCtx.UpdateKeystore();
 
+        #region Key Store Debug
         if (logger.IsEnabled(LogLevel.Debug))
         {
             var option = new JsonSerializerOptions
@@ -207,6 +208,7 @@ internal class LagrangeHost(
 
             logger.LogDebug("Get keystore for bot {id}, start login.", keyStore.Uin);
         }
+        #endregion
 
         // password Login
         if (keyStore.Uin != 0 &&
