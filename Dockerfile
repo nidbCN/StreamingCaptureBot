@@ -1,9 +1,12 @@
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
+
 COPY ["./StreamingCaptureBot.Core/StreamingCaptureBot.Core.csproj", "./StreamingCaptureBot.Core/"]
-RUN mkdir -p ./Lagrange.Core/Lagrange.Core
+COPY ["./StreamingCaptureBot.Utils/StreamingCaptureBot.Utils.csproj", "./StreamingCaptureBot.Utils/"]
+COPY ["./StreamingCaptureBot.Impl/Tencent/StreamingCaptureBot.Impl.Tencent.csproj", "./StreamingCaptureBot.Impl/Tencent/"]
 COPY ["./Lagrange.Core/Lagrange.Core/Lagrange.Core.csproj", "./Lagrange.Core/Lagrange.Core/"]
+
 RUN dotnet restore "./StreamingCaptureBot.Core/StreamingCaptureBot.Core.csproj"
 COPY . .
 WORKDIR "/src/."
