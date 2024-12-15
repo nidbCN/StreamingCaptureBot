@@ -390,32 +390,21 @@ public sealed class CaptureService : IDisposable
     /// <param name="cancellationToken"></param>
     /// <returns>是否成功，图片字节码</returns>
     public async Task<(bool, byte[]?)> CaptureImageAsync(CancellationToken cancellationToken = default)
-    {
-        await _semaphore.WaitAsync(cancellationToken);
-
-        // Check image cache.
-        try
-        {
-            var captureTimeSpan = DateTime.Now - LastCaptureTime;
-            if (LastCapturedImage != null && captureTimeSpan <= _streamOption.CacheTimeout)
-            {
-                _logger.LogInformation("Return image cached {time} ago.", captureTimeSpan);
-                return (true, LastCapturedImage);
-            }
-        }
-        finally
-        {
-            _semaphore.Release();
-        }
-
-        // Capture new image and process it.
-        var result = await Task.Run(async () =>
+        => await Task.Run(async () =>
         {
             await _semaphore.WaitAsync(cancellationToken);
 
-            _logger.LogInformation("Cache image expired, capture new.");
             try
             {
+                var captureTimeSpan = DateTime.Now - LastCaptureTime;
+                if (LastCapturedImage != null && captureTimeSpan <= _streamOption.CacheTimeout)
+                {
+                    _logger.LogInformation("Return image cached {time} ago.", captureTimeSpan);
+                    return (true, LastCapturedImage);
+                }
+
+                _logger.LogInformation("Image cached {time} ago has expired, capture new.", captureTimeSpan);
+
                 OpenInput();
 
                 var decodedFrame = DecodeNextFrameUnsafe();
@@ -450,6 +439,4 @@ public sealed class CaptureService : IDisposable
                 _semaphore.Release();
             }
         }, cancellationToken);
-        return result;
-    }
 }
