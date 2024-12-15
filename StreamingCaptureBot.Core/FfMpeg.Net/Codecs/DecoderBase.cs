@@ -83,8 +83,6 @@ public abstract class DecoderBase(ILogger logger, DecoderContext ctx) : IDisposa
             throw error;
         }
 
-        var scope = logger.BeginScope(frame.ToString());
-
         if (decodeResult < 0)
         {
             // 错误处理

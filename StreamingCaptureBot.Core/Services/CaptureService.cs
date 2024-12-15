@@ -124,6 +124,8 @@ public sealed class CaptureService : IDisposable
             {
                 try
                 {
+                    #region Find Stream
+
                     do
                     {
                         _packet.Reset();
@@ -147,6 +149,8 @@ public sealed class CaptureService : IDisposable
 
                         readResult.ThrowExceptionIfError();
                     } while (_packet.StreamIndex != _streamOption.Value.StreamIndex);
+
+                    #endregion
 
                     scope?.Dispose();   // ensure last scope has been disposed
                     scope = _logger.BeginScope(_packet.ToString());
@@ -206,10 +210,12 @@ public sealed class CaptureService : IDisposable
                         frame.PictureType.ToString(),
                         frame.GetPresentationTimeSpan(_decoder.Context.TimeBase).ToString("c"));
 
+                    scope?.Dispose();
                     break;
                 }
                 finally
                 {
+                    scope?.Dispose();
                     _packet.Reset();
                 }
             }
