@@ -114,132 +114,119 @@ public sealed class CaptureService : IDisposable
     {
         var frame = _frame;
 
-        using (_logger.BeginScope(_decoder.Context.ToString()))
+        var timeoutTokenSource = new CancellationTokenSource(_streamOption.Value.CodecTimeout);
+
+        while (!timeoutTokenSource.Token.IsCancellationRequested)
         {
-            var timeoutTokenSource = new CancellationTokenSource(_streamOption.Value.CodecTimeout);
-
-            IDisposable? scope = null;
-
-            while (!timeoutTokenSource.Token.IsCancellationRequested)
+            try
             {
-                try
+                #region Find Stream
+
+                do
                 {
-                    #region Find Stream
-
-                    do
-                    {
-                        _packet.Reset();
-
-                        int readResult;
-
-                        unsafe
-                        {
-                            readResult = ffmpeg.av_read_frame(_inputFormatCtx, _packet.UnmanagedPointer);
-                        }
-
-                        // EOF
-                        if (readResult == ffmpeg.AVERROR_EOF)
-                        {
-                            var message = FfMpegExtension.av_strerror(readResult);
-                            var error = new ApplicationException(message);
-
-                            _logger.LogError(error, message);
-                            throw new EndOfStreamException(message, error);
-                        }
-
-                        readResult.ThrowExceptionIfError();
-                    } while (_packet.StreamIndex != _streamOption.Value.StreamIndex);
-
-                    #endregion
-
-                    scope?.Dispose();   // ensure last scope has been disposed
-                    scope = _logger.BeginScope(_packet.ToString());
-
-                    // 取到了 stream 中的包
-                    unsafe
-                    {
-                        _logger.LogInformation(
-                            "Packet in stream[{index}] with size:{size}, pts(display):{pts}, dts(decode):{dts}, key frame flag:{containsKey}",
-                            _packet.StreamIndex,
-                            string.Format(_formatter, "{0}", _packet.Size),
-                            _packet.GetPresentationTimeSpan(_decoder.Context.TimeBase).ToString("c"),
-                            _packet.GetDecodingTimeSpan(_decoder.Context.TimeBase).ToString("c"),
-                            (_packet.UnmanagedPointer->flags & ffmpeg.AV_PKT_FLAG_KEY) == 1
-                        );
-                    }
-
-                    // 空包
-                    if (_packet.Size <= 0)
-                    {
-                        _logger.LogWarning("Packet with invalid size {size}, ignore.",
-                            string.Format(_formatter, "{0}", _packet.Size));
-                    }
-
-                    unsafe
-                    {
-                        // 校验关键帧
-                        if ((_packet.UnmanagedPointer->flags & ffmpeg.AV_PKT_FLAG_KEY) == 0x00)
-                        {
-                            _logger.LogInformation("Packet not contains KEY frame, drop.");
-                            continue;
-                        }
-                    }
-
-                    // 校验 PTS
-                    if (_packet.PresentationTimeStamp < 0)
-                    {
-                        _logger.LogWarning("Packet pts={pts} < 0, drop.",
-                            _packet.GetPresentationTimeSpan(_decoder.Context.TimeBase));
-                        continue;
-                    }
-
-                    scope?.Dispose();
-
-                    _decoder.Decode(_packet, ref frame);
-
-                    scope = _logger.BeginScope(frame.ToString());
-
-                    if (frame.PictureType != AVPictureType.AV_PICTURE_TYPE_I)
-                    {
-                        _logger.LogWarning("Frame type {type}, not key frame, drop.", frame.PictureType.ToString());
-                        continue;
-                    }
-
-                    // 解码正常
-                    _logger.LogInformation("Decode frame success. type {type}, pts {pts}.",
-                        frame.PictureType.ToString(),
-                        frame.GetPresentationTimeSpan(_decoder.Context.TimeBase).ToString("c"));
-
-                    scope?.Dispose();
-                    break;
-                }
-                finally
-                {
-                    scope?.Dispose();
                     _packet.Reset();
-                }
-            }
 
-            if (timeoutTokenSource.Token.IsCancellationRequested)
-            {
-                // 解码失败
-                var error = new TaskCanceledException("Decode timeout.");
-                _logger.LogError(error, "Failed to decode.\n");
-                throw error;
-            }
+                    int readResult;
 
-            unsafe
-            {
-                if (_decoder.Context.UnmanagedPointer->hw_device_ctx is not null)
+                    unsafe
+                    {
+                        readResult = ffmpeg.av_read_frame(_inputFormatCtx, _packet.UnmanagedPointer);
+                    }
+
+                    // EOF
+                    if (readResult == ffmpeg.AVERROR_EOF)
+                    {
+                        var message = FfMpegExtension.av_strerror(readResult);
+                        var error = new ApplicationException(message);
+
+                        _logger.LogError(error, message);
+                        throw new EndOfStreamException(message, error);
+                    }
+
+                    readResult.ThrowExceptionIfError();
+                } while (_packet.StreamIndex != _streamOption.Value.StreamIndex);
+
+                #endregion
+
+                // 取到了 stream 中的包
+                unsafe
                 {
-                    _logger.LogError("Hardware decode is unsupported, skip.");
-                    // 硬件解码数据转换
-                    // ffmpeg.av_hwframe_transfer_data(frame, frame, 0).ThrowExceptionIfError();
+                    _logger.LogInformation(
+                        "Packet in stream[{index}] with size:{size}, pts(display):{pts}, dts(decode):{dts}, key frame flag:{containsKey}",
+                        _packet.StreamIndex,
+                        string.Format(_formatter, "{0}", _packet.Size),
+                        _packet.GetPresentationTimeSpan(_decoder.Context.TimeBase).ToString("c"),
+                        _packet.GetDecodingTimeSpan(_decoder.Context.TimeBase).ToString("c"),
+                        (_packet.UnmanagedPointer->flags & ffmpeg.AV_PKT_FLAG_KEY) == 1
+                    );
                 }
-            }
 
-            return frame;
+                // 空包
+                if (_packet.Size <= 0)
+                {
+                    _logger.LogWarning("Packet with invalid size {size}, ignore.",
+                        string.Format(_formatter, "{0}", _packet.Size));
+                }
+
+                unsafe
+                {
+                    // 校验关键帧
+                    if ((_packet.UnmanagedPointer->flags & ffmpeg.AV_PKT_FLAG_KEY) == 0x00)
+                    {
+                        _logger.LogInformation("Packet not contains KEY frame, drop.");
+                        continue;
+                    }
+                }
+
+                // 校验 PTS
+                if (_packet.PresentationTimeStamp < 0)
+                {
+                    _logger.LogWarning("Packet pts={pts} < 0, drop.",
+                        _packet.GetPresentationTimeSpan(_decoder.Context.TimeBase));
+                    continue;
+                }
+
+                _decoder.Decode(_packet, ref frame);
+
+
+                if (frame.PictureType != AVPictureType.AV_PICTURE_TYPE_I)
+                {
+                    _logger.LogWarning("Frame type {type}, not key frame, drop.", frame.PictureType.ToString());
+                    continue;
+                }
+
+                // 解码正常
+                _logger.LogInformation("Decode frame success. type {type}, pts {pts}.",
+                    frame.PictureType.ToString(),
+                    frame.GetPresentationTimeSpan(_decoder.Context.TimeBase).ToString("c"));
+
+                break;
+            }
+            finally
+            {
+                _packet.Reset();
+            }
         }
+
+        if (timeoutTokenSource.Token.IsCancellationRequested)
+        {
+            // 解码失败
+            var error = new TaskCanceledException("Decode timeout.");
+            _logger.LogError(error, "Failed to decode.\n");
+            throw error;
+        }
+
+        unsafe
+        {
+            if (_decoder.Context.UnmanagedPointer->hw_device_ctx is not null)
+            {
+                _logger.LogError("Hardware decode is unsupported, skip.");
+                // 硬件解码数据转换
+                // ffmpeg.av_hwframe_transfer_data(frame, frame, 0).ThrowExceptionIfError();
+            }
+        }
+
+        return frame;
     }
 
     /// <summary>

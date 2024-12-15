@@ -64,6 +64,7 @@ public class CodecBase(ILogger logger, BinarySizeFormatter binarySizeFormat) : I
 #pragma warning disable CA2254
                 logger.LogError(exception, message);
 #pragma warning restore CA2254
+                scope?.Dispose();
                 throw exception;
             }
 
@@ -117,6 +118,7 @@ public class CodecBase(ILogger logger, BinarySizeFormatter binarySizeFormat) : I
                 logger.LogError(exception, message);
 #pragma warning restore CA2254
 
+                scope?.Dispose();
                 throw exception;
             }
 
