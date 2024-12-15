@@ -1,4 +1,5 @@
-﻿using FFmpeg.AutoGen.Abstractions;
+﻿using System.Globalization;
+using FFmpeg.AutoGen.Abstractions;
 using Microsoft.Extensions.Options;
 using StreamingCaptureBot.Core.Configs;
 using StreamingCaptureBot.Core.FfMpeg.Net.Codecs;
@@ -46,8 +47,11 @@ public sealed class CaptureService : IDisposable
             throw new ArgumentNullException(nameof(option), "StreamOption.Url can not be null.");
 
         // 设置超时
-        var openOptions = _openOptions;
-        ffmpeg.av_dict_set(&openOptions, "timeout", _streamOption.ConnectTimeout.ToString(), 0);
+        if (_streamOption.ConnectTimeout > 0)
+        {
+            var openOptions = _openOptions;
+            ffmpeg.av_dict_set(&openOptions, "timeout", _streamOption.ConnectTimeout.ToString(), 0);
+        }
 
         #region 初始化视频流解码器
         OpenInput();
@@ -136,8 +140,7 @@ public sealed class CaptureService : IDisposable
         {
             IDisposable? scope = null;
             var decodeResult = -1;
-            var timeoutTokenSource = new CancellationTokenSource(
-                TimeSpan.FromMilliseconds(_streamOption.CodecTimeout));
+            var timeoutTokenSource = new CancellationTokenSource(_streamOption.CodecTimeout);
 
             while (!timeoutTokenSource.Token.IsCancellationRequested)
             {
@@ -394,7 +397,7 @@ public sealed class CaptureService : IDisposable
         try
         {
             var captureTimeSpan = DateTime.Now - LastCaptureTime;
-            if (LastCapturedImage != null && captureTimeSpan <= TimeSpan.FromSeconds(5))
+            if (LastCapturedImage != null && captureTimeSpan <= _streamOption.CacheTimeout)
             {
                 _logger.LogInformation("Return image cached {time} ago.", captureTimeSpan);
                 return (true, LastCapturedImage);
