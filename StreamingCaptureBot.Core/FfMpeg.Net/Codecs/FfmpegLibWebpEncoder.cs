@@ -29,7 +29,7 @@ public class FfmpegLibWebpEncoder : CodecBase
             AVDictionary* openOptions = null;
             ffmpeg.av_dict_set(&openOptions, "preset", "photo", 0);
 
-            //ffmpeg.av_opt_set(CodecCtx->priv_data,
+            //ffmpeg.av_opt_set(_codecCtx->priv_data,
             //        "preset", "photo", ffmpeg.AV_OPT_SEARCH_CHILDREN)
             //    .ThrowExceptionIfError();
 

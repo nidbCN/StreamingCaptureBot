@@ -341,7 +341,6 @@ internal class LagrangeHost(
     Task IHostedService.StopAsync(CancellationToken cancellationToken)
         => Task.CompletedTask;
 
-
     Task IHostedLifecycleService.StoppedAsync(CancellationToken cancellationToken)
         => Task.CompletedTask;
 

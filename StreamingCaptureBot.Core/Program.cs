@@ -2,7 +2,7 @@ using StreamingCaptureBot.Core;
 using StreamingCaptureBot.Core.Configs;
 using StreamingCaptureBot.Core.Controllers;
 using StreamingCaptureBot.Core.Extensions.DependencyInjection;
-using StreamingCaptureBot.Core.FfMpeg.Net.Codecs;
+using StreamingCaptureBot.Core.FfMpeg.Net.Codecs.DependencyInjection;
 using StreamingCaptureBot.Core.Services;
 using StreamingCaptureBot.Core.Utils;
 using StreamingCaptureBot.Impl.Tencent.Extensions.DependencyInjection;
@@ -33,15 +33,14 @@ builder.Services.Configure<BotOption>(botOption);
 builder.Services.Configure<StreamOption>(
     builder.Configuration.GetRequiredSection(nameof(StreamOption)));
 
+builder.Services.AddCodecs();
+builder.Services.AddLogging();
+
 builder.Services.AddTransient<BinarySizeFormatter>();
 
-builder.Services.AddSingleton<FfmpegLibWebpEncoder>();
 builder.Services.AddSingleton<CaptureService>();
 builder.Services.AddSingleton<BotController>();
 
-builder.Services.AddHostedService<FfMpegConfigureHost>();
 builder.Services.AddHostedService<HeartBeatWorker>();
-
-builder.Services.AddLogging();
 
 builder.Build().Run();

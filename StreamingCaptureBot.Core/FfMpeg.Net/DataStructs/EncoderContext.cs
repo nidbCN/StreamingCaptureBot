@@ -4,13 +4,15 @@ namespace StreamingCaptureBot.Core.FfMpeg.Net.DataStructs;
 
 public class EncoderContext : AvCodecContextWrapper
 {
-    public unsafe EncoderContext(AVCodec* codec) : base(codec)
-    {
-    }
+    public unsafe EncoderContext(string name)
+        : this(ffmpeg.avcodec_find_encoder_by_name(name)) { }
 
-    public unsafe EncoderContext(AVCodecContext* ctx) : base(ctx)
-    {
-    }
+    public unsafe EncoderContext(AVCodecID codecId)
+        : this(ffmpeg.avcodec_find_encoder(codecId)) { }
+
+    public unsafe EncoderContext(AVCodec* codec) : base(codec) { }
+
+    public unsafe EncoderContext(AVCodecContext* ctx) : base(ctx) { }
 
     public new AVRational SampleAspectRatio
     {

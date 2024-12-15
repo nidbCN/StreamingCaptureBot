@@ -4,13 +4,15 @@ namespace StreamingCaptureBot.Core.FfMpeg.Net.DataStructs;
 
 public class DecoderContext : AvCodecContextWrapper
 {
-    public unsafe DecoderContext(AVCodec* codec) : base(codec)
-    {
-    }
+    public unsafe DecoderContext(string name)
+        : this(ffmpeg.avcodec_find_decoder_by_name(name)) { }
 
-    public unsafe DecoderContext(AVCodecContext* ctx) : base(ctx)
-    {
-    }
+    public unsafe DecoderContext(AVCodecID codecId)
+        : this(ffmpeg.avcodec_find_decoder(codecId)) { }
+
+    public unsafe DecoderContext(AVCodec* codec) : base(codec) { }
+
+    public unsafe DecoderContext(AVCodecContext* ctx) : base(ctx) { }
 
     public int TrySendPacket(AvPacketWrapper packet)
     {

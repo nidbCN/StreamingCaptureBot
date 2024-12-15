@@ -4,19 +4,16 @@ namespace StreamingCaptureBot.Core.Controllers;
 
 public class BotController(
     ILogger<BotController> logger,
-    IServiceProvider services
+    CaptureService captureService
     )
 {
-    private CaptureService? _captureService;
-
     public async Task<ActionResult> HandleCaptureImageCommand(BotRequest request)
     {
-        _captureService ??= services.GetRequiredService<CaptureService>();
         var response = new ActionResult();
 
         try
         {
-            var (result, image) = await _captureService.CaptureImageAsync();
+            var (result, image) = await captureService.CaptureImageAsync();
 
             if (!result || image is null)
             {
@@ -37,7 +34,7 @@ public class BotController(
         }
         finally
         {
-            await _captureService.FlushDecoderBufferAsync(CancellationToken.None);
+            await captureService.FlushDecoderBufferAsync(CancellationToken.None);
         }
 
         return response;

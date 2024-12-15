@@ -2,7 +2,6 @@
 using FFmpeg.AutoGen.Abstractions;
 using StreamingCaptureBot.Core.FfMpeg.Net.DataStructs;
 using StreamingCaptureBot.Core.FfMpeg.Net.Extensions;
-using StreamingCaptureBot.Core.FfMpeg.Net.Utils;
 using StreamingCaptureBot.Core.Utils;
 
 namespace StreamingCaptureBot.Core.FfMpeg.Net.Codecs;
@@ -126,109 +125,6 @@ public class CodecBase(ILogger logger, BinarySizeFormatter binarySizeFormat) : I
 
             return linkedBuffer;
         }
-    }
-
-    public unsafe AvFrameWrapper Decode(AVPacket* packet)
-    {
-        throw new NotImplementedException();
-        var decodeResult = 0;
-        var frame = new AvFrameWrapper();
-
-        // 尝试发送
-        logger.LogDebug("Try send packet to decoder.");
-        var sendResult = ffmpeg.avcodec_send_packet(CodecCtx, packet);
-
-        if (sendResult == ffmpeg.AVERROR(ffmpeg.EAGAIN))
-        {
-            // reference:
-            // * tree/release/6.1/fftools/ffmpeg_dec.c:567
-            // 理论上不会出现 EAGAIN
-
-            logger.LogWarning(
-                "Receive {error} after sent, this could be cause by ffmpeg bug or some reason, ignored this message.",
-                nameof(ffmpeg.EAGAIN));
-            sendResult = 0;
-        }
-
-        if (sendResult == 0 || sendResult == ffmpeg.AVERROR_EOF)
-        {
-            // 发送成功
-            logger.LogDebug("PacketBuffer sent success, try get decoded frame.");
-            // 获取解码结果
-            decodeResult = ffmpeg.avcodec_receive_frame(CodecCtx, frame.UnmanagedPointer);
-        }
-        else
-        {
-            var error = new ApplicationException(FfMpegExtension.av_strerror(sendResult));
-
-            // 无法处理的发送失败
-            logger.LogError(error, "Send packet to decoder failed.\n");
-
-            throw error;
-        }
-
-        var scope = logger.BeginScope($"Frame@0x{frame.UnmanagedPointer->GetHashCode():x8}");
-
-        if (decodeResult < 0)
-        {
-            // 错误处理
-            ApplicationException error;
-            var message = FfMpegExtension.av_strerror(decodeResult);
-
-            if (decodeResult == ffmpeg.AVERROR_EOF)
-            {
-                // reference:
-                // * https://ffmpeg.org/doxygen/6.1/group__lavc__decoding.html#ga11e6542c4e66d3028668788a1a74217c
-                // > the codec has been fully flushed, and there will be no more output frames
-                // 理论上不会出现 EOF
-                message =
-                    "the codec has been fully flushed, and there will be no more output frames.";
-
-                error = new(message);
-
-                logger.LogError(error, "Received EOF from decoder.\n");
-            }
-            else if (decodeResult == ffmpeg.AVERROR(ffmpeg.EAGAIN))
-            {
-                // reference:
-                // * tree/release/6.1/fftools/ffmpeg_dec.c:596
-                // * https://ffmpeg.org/doxygen/6.1/group__lavc__decoding.html#ga11e6542c4e66d3028668788a1a74217c
-                // > output is not available in this state - user must try to send new input
-                // 理论上不会出现 EAGAIN
-                message =
-                    "output is not available in this state - user must try to send new input";
-
-                //if (_streamOption.KeyFrameOnly)
-                //{
-                //    // 抛出异常，仅关键帧模式中，该错误不可能通过发送更多需要的包来解决
-                //    error = new(message);
-
-                //    _logger.LogError(error, "Received EAGAIN from decoder.\n");
-                //    throw error;
-                //}
-
-                // 忽略错误，发送下一个包进行编码，可能足够的包进入解码器可以解决
-                logger.LogWarning("Receive EAGAIN from decoder, retry.");
-                // continue;
-            }
-            else
-            {
-                error = new(message);
-                logger.LogError(error, "Uncaught error occured during decoding.\n");
-                throw error;
-            }
-        }
-
-        // 解码正常
-        logger.LogInformation("Decode frame success. type {type}, pts {pts}.",
-            frame.UnmanagedPointer->pict_type.ToString(),
-            TimeSpanUtil.FromFfmpeg(frame.UnmanagedPointer->pts, CodecCtx->time_base).ToString("c"));
-
-    }
-
-    public AvFrameWrapper Decode(Queue<byte[]> binaryQueue)
-    {
-        throw new NotImplementedException();
     }
 
     private unsafe int ReceivePacket()
