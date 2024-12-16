@@ -141,7 +141,7 @@ public abstract class DecoderBase(ILogger logger, DecoderContext ctx) : IDisposa
             // 解码正常
             logger.LogInformation("Decode frame success. type {type}, pts {pts}.",
                 frame.PictureType.ToString(),
-                frame.GetPresentationTimeSpan(ctx.TimeBase).ToString("c"));
+                frame.GetPresentationTimeSpan(ctx.TimeBase)?.ToString("c") ?? "NO PTS");
         }
     }
 
