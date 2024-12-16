@@ -76,13 +76,14 @@ public static class ServiceCollectionExtension
                 if (streamOption.Value.StreamIndex < 0)
                     streamOption.Value.StreamIndex = streamIndex;
 
+                var stream = formatCtx->streams[streamOption.Value.StreamIndex];
                 var dec = new GenericDecoder(logger, decoder);
 
                 ffmpeg.avcodec_parameters_to_context(
-                        dec.Context.UnmanagedPointer,
-                        formatCtx->streams[streamOption.Value.StreamIndex]->codecpar)
+                        dec.Context.UnmanagedPointer, stream->codecpar)
                     .ThrowExceptionIfError();
-
+                dec.Context.TimeBase = stream->time_base;
+                
                 logger.LogDebug("Close Input.");
 
                 ffmpeg.avformat_close_input(&formatCtx);
