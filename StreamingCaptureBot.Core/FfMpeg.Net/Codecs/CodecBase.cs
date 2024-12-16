@@ -30,8 +30,6 @@ public class CodecBase(ILogger logger, BinarySizeFormatter binarySizeFormat) : I
             CodecCtx->sample_aspect_ratio = frame->sample_aspect_ratio;
 
             #region 发送
-            var scope = logger.BeginScope($"frame@0x{frame->GetHashCode():x8}");
-
             logger.LogDebug("Try send frame to encoder.");
 
             var ret = ffmpeg.avcodec_send_frame(CodecCtx, frame);
@@ -64,23 +62,22 @@ public class CodecBase(ILogger logger, BinarySizeFormatter binarySizeFormat) : I
 #pragma warning disable CA2254
                 logger.LogError(exception, message);
 #pragma warning restore CA2254
-                scope?.Dispose();
                 throw exception;
             }
 
-            logger.LogInformation("Success sent frame to decoder.");
+            logger.LogInformation("Success sent frame to encoder.");
             logger.LogDebug("If there's no another usage, this frame can be release now.");
 
-            scope?.Dispose();
             #endregion
 
             #region 接收
-            logger.LogDebug("Try receive packet from decoder.");
+            logger.LogDebug("Try receive packet from encoder.");
 
+            IDisposable? scope = null;
             for (ret = ReceivePacket(); ret == 0 && packet->size > 0; ret = ReceivePacket())
             {
                 scope = logger.BeginScope($"packet@0x{packet->buf->GetHashCode():x8}");
-                logger.LogInformation("Received packet from decoder, size:{size}.",
+                logger.LogInformation("Received packet from encoder, size:{size}.",
                     string.Format(binarySizeFormat, "{0}", packet->size));
 
                 var buffer = new byte[packet->size];

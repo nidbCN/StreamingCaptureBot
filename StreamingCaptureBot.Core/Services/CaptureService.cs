@@ -116,8 +116,13 @@ public sealed class CaptureService : IDisposable
 
         var timeoutTokenSource = new CancellationTokenSource(_streamOption.Value.CodecTimeout);
 
+        IDisposable? scope = null;
+
         while (!timeoutTokenSource.Token.IsCancellationRequested)
         {
+            // clear scope
+            scope?.Dispose();
+
             try
             {
                 #region Find Stream
@@ -145,27 +150,34 @@ public sealed class CaptureService : IDisposable
 
                     readResult.ThrowExceptionIfError();
                 } while (_packet.StreamIndex != _streamOption.Value.StreamIndex);
+                scope = _logger.BeginScope(_packet.ToString());
 
                 #endregion
 
                 // 取到了 stream 中的包
                 unsafe
                 {
+                    _logger.LogDebug("Original size: {size}, pts: {pts}, dts: {dts}.",
+                        _packet.Size,
+                        _packet.PresentationTimeStamp,
+                        _packet.DecodingTimeStamp
+                    );
+
                     _logger.LogInformation(
-                        "Packet in stream[{index}] with size:{size}, pts(display):{pts}, dts(decode):{dts}, key frame flag:{containsKey}",
+                        "Packet in stream[{index}] with size:{size}, pts(display):{pts:c}, dts(decode):{dts:c}.",
                         _packet.StreamIndex,
                         string.Format(_formatter, "{0}", _packet.Size),
-                        _packet.GetPresentationTimeSpan(_decoder.Context.TimeBase).ToString("c"),
-                        _packet.GetDecodingTimeSpan(_decoder.Context.TimeBase).ToString("c"),
-                        (_packet.UnmanagedPointer->flags & ffmpeg.AV_PKT_FLAG_KEY) == 1
+                        _packet.GetPresentationTimeSpan(_decoder.Context.TimeBase),
+                        _packet.GetDecodingTimeSpan(_decoder.Context.TimeBase)
                     );
                 }
-
+                #region Filter packet
                 // 空包
                 if (_packet.Size <= 0)
                 {
-                    _logger.LogWarning("Packet with invalid size {size}, ignore.",
+                    _logger.LogWarning("Packet with invalid size {size}, drop.",
                         string.Format(_formatter, "{0}", _packet.Size));
+                    continue;
                 }
 
                 unsafe
@@ -173,7 +185,8 @@ public sealed class CaptureService : IDisposable
                     // 校验关键帧
                     if ((_packet.UnmanagedPointer->flags & ffmpeg.AV_PKT_FLAG_KEY) == 0x00)
                     {
-                        _logger.LogInformation("Packet not contains KEY frame, drop.");
+                        _logger.LogInformation("Packet flag {flag:x8} not contains KEY frame, drop.",
+                            _packet.UnmanagedPointer->flags);
                         continue;
                     }
                 }
@@ -181,16 +194,22 @@ public sealed class CaptureService : IDisposable
                 // 校验 PTS
                 if (_packet.PresentationTimeStamp < 0)
                 {
-                    _logger.LogWarning("Packet pts={pts} < 0, drop.",
+                    _logger.LogWarning("Packet pts={pts:c} < 0, drop.",
                         _packet.GetPresentationTimeSpan(_decoder.Context.TimeBase));
                     continue;
                 }
-
+                #endregion
                 _decoder.Decode(_packet, ref frame);
+
+                scope?.Dispose();
 
                 if (frame.PictureType != AVPictureType.AV_PICTURE_TYPE_I)
                 {
-                    _logger.LogWarning("Frame type {type}, not key frame, drop.", frame.PictureType.ToString());
+                    using (_logger.BeginScope(frame.ToString()))
+                    {
+                        _logger.LogWarning("Frame type {type}, not key frame, drop.", frame.PictureType.ToString());
+                    }
+
                     continue;
                 }
 
@@ -208,6 +227,7 @@ public sealed class CaptureService : IDisposable
             // 解码失败
             var error = new TaskCanceledException("Decode timeout.");
             _logger.LogError(error, "Failed to decode.\n");
+
             throw error;
         }
 
@@ -298,29 +318,31 @@ public sealed class CaptureService : IDisposable
                 OpenInput();
 
                 var decodedFrame = DecodeNextFrameUnsafe();
-
-                CloseInput();
-
-                var queue = _encoder.Encode(decodedFrame);
-                if (queue.Count > 1)
+                using (_logger.BeginScope(decodedFrame.ToString()))
                 {
-                    var bufferSize = queue.Sum(buf => buf.Length);
-                    var buffer = new byte[bufferSize];
+                    CloseInput();
 
-                    var copied = 0;
-                    foreach (var bufferBlock in queue)
+                    var queue = _encoder.Encode(decodedFrame);
+
+                    if (queue.Count > 1)
                     {
-                        Buffer.BlockCopy(bufferBlock, 0, buffer, copied, bufferBlock.Length);
-                        copied += bufferBlock.Length;
+                        var bufferSize = queue.Sum(buf => buf.Length);
+                        var buffer = new byte[bufferSize];
+
+                        var copied = 0;
+                        foreach (var bufferBlock in queue)
+                        {
+                            Buffer.BlockCopy(bufferBlock, 0, buffer, copied, bufferBlock.Length);
+                            copied += bufferBlock.Length;
+                        }
+
+                        LastCapturedImage = buffer;
                     }
-
-                    LastCapturedImage = buffer;
+                    else
+                    {
+                        LastCapturedImage = queue.Dequeue();
+                    }
                 }
-                else
-                {
-                    LastCapturedImage = queue.Dequeue();
-                }
-
                 LastCaptureTime = DateTime.Now;
                 return (true, LastCapturedImage);
             }

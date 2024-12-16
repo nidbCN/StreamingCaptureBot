@@ -54,8 +54,6 @@ public abstract class DecoderBase(ILogger logger, DecoderContext ctx) : IDisposa
             int decodeResult;
             // 尝试发送
 
-            var scope = logger.BeginScope(packet.ToString());
-
             logger.LogDebug("Try send packet to decoder.");
 
             var sendResult = ctx.TrySendPacket(packet);
@@ -74,12 +72,10 @@ public abstract class DecoderBase(ILogger logger, DecoderContext ctx) : IDisposa
             if (sendResult == 0 || sendResult == ffmpeg.AVERROR_EOF)
             {
                 // 发送成功
-                logger.LogDebug("PacketBuffer sent success, try get decoded frame.");
+                logger.LogInformation("Success sent packet to decoder.");
 
-                scope?.Dispose();
                 // 获取解码结果
                 decodeResult = ctx.TryReceivedFrame(ref frame);
-                scope = logger.BeginScope(frame.ToString());
             }
             else
             {
@@ -88,7 +84,6 @@ public abstract class DecoderBase(ILogger logger, DecoderContext ctx) : IDisposa
                 // 无法处理的发送失败
                 logger.LogError(error, "Send packet to decoder failed.\n");
 
-                scope?.Dispose();
                 throw error;
             }
 
@@ -138,9 +133,7 @@ public abstract class DecoderBase(ILogger logger, DecoderContext ctx) : IDisposa
                 {
                     error = new(message);
                     logger.LogError(error, "Uncaught error occured during decoding.\n");
-                    
-                    scope?.Dispose();
-                    
+
                     throw error;
                 }
             }
@@ -149,8 +142,6 @@ public abstract class DecoderBase(ILogger logger, DecoderContext ctx) : IDisposa
             logger.LogInformation("Decode frame success. type {type}, pts {pts}.",
                 frame.PictureType.ToString(),
                 frame.GetPresentationTimeSpan(ctx.TimeBase).ToString("c"));
-            
-            scope?.Dispose();
         }
     }
 
