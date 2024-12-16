@@ -30,7 +30,7 @@ public class AvFrameWrapper : WrapperBase<AVFrame>
         }
     }
 
-    public TimeSpan GetPresentationTimeSpan(AVRational timebase)
+    public TimeSpan? GetPresentationTimeSpan(AVRational timebase)
         => TimeSpanUtil.FromFfmpeg(PresentationTimeStamp, timebase);
 
     public long PacketDecodingTimeStamp
@@ -41,7 +41,7 @@ public class AvFrameWrapper : WrapperBase<AVFrame>
         }
     }
 
-    public TimeSpan GetPacketDecodingTimeSpan(AVRational timebase)
+    public TimeSpan? GetPacketDecodingTimeSpan(AVRational timebase)
         => TimeSpanUtil.FromFfmpeg(PacketDecodingTimeStamp, timebase);
 
     public void Reset()

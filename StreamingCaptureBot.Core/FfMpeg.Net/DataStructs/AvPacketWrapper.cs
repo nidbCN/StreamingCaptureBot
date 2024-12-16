@@ -1,5 +1,4 @@
-﻿using System.Numerics;
-using FFmpeg.AutoGen.Abstractions;
+﻿using FFmpeg.AutoGen.Abstractions;
 using StreamingCaptureBot.Core.FfMpeg.Net.Utils;
 
 namespace StreamingCaptureBot.Core.FfMpeg.Net.DataStructs;
@@ -38,7 +37,7 @@ public class AvPacketWrapper : WrapperBase<AVPacket>
         }
     }
 
-    public TimeSpan GetPresentationTimeSpan(AVRational timebase)
+    public TimeSpan? GetPresentationTimeSpan(AVRational timebase)
         => TimeSpanUtil.FromFfmpeg(PresentationTimeStamp, timebase);
 
     public long DecodingTimeStamp
@@ -49,7 +48,7 @@ public class AvPacketWrapper : WrapperBase<AVPacket>
         }
     }
 
-    public TimeSpan GetDecodingTimeSpan(AVRational timebase)
+    public TimeSpan? GetDecodingTimeSpan(AVRational timebase)
         => TimeSpanUtil.FromFfmpeg(DecodingTimeStamp, timebase);
 
     public void Reset()
