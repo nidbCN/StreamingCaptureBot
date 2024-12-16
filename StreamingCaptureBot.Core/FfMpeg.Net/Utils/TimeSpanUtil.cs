@@ -13,6 +13,16 @@ public static class TimeSpanUtil
         }
 
         var seconds = (double)(value * timebase.num) / timebase.den;
+
+        if (seconds > TimeSpan.MaxValue.TotalSeconds)
+        {
+            return TimeSpan.MaxValue;
+        }
+        else if (seconds < TimeSpan.MinValue.TotalSeconds)
+        {
+            return TimeSpan.MinValue;
+        }
+
         return TimeSpan.FromSeconds(seconds);
     }
 }
