@@ -188,7 +188,6 @@ public sealed class CaptureService : IDisposable
 
                 _decoder.Decode(_packet, ref frame);
 
-
                 if (frame.PictureType != AVPictureType.AV_PICTURE_TYPE_I)
                 {
                     _logger.LogWarning("Frame type {type}, not key frame, drop.", frame.PictureType.ToString());
@@ -196,10 +195,6 @@ public sealed class CaptureService : IDisposable
                 }
 
                 // 解码正常
-                _logger.LogInformation("Decode frame success. type {type}, pts {pts}.",
-                    frame.PictureType.ToString(),
-                    frame.GetPresentationTimeSpan(_decoder.Context.TimeBase).ToString("c"));
-
                 break;
             }
             finally
