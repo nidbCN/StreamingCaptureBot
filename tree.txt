@@ -1,0 +1,121 @@
+.
+├── build_bot-base.sh
+├── docker-compose.dev.yaml
+├── docker-compose.yaml
+├── Dockerfile
+├── Dockerfile.Aliyun
+├── Lagrange.Core
+├── LICENSE
+├── README.md
+├── StreamingCaptureBot.Base
+│   ├── apt.sources.d
+│   │   ├── debian.sources
+│   │   └── ubuntu.sources
+│   ├── Dockerfile
+│   ├── ffmpeg
+│   └── scripts
+│       ├── post-build.sh
+│       └── pre-build.sh
+├── StreamingCaptureBot.Core
+│   ├── Bot
+│   │   ├── ControllerBase.cs
+│   │   ├── MessageResult.cs
+│   │   └── Routing
+│   │       ├── BindCaptchaAttribute.cs
+│   │       ├── BindFriendMessageAttribute.cs
+│   │       ├── BindGroupMessageAttribute.cs
+│   │       ├── BindMessageAttribute.cs
+│   │       ├── BindOfflineAttribute.cs
+│   │       └── BindOnlineAttribute.cs
+│   ├── Bots
+│   │   ├── LagrangeBot
+│   │   │   └── LagrangeHost.cs
+│   │   └── TencentBot
+│   │       └── TencentHost.cs
+│   ├── Configs
+│   │   ├── BotOption.cs
+│   │   ├── LagrangeImplOption.cs
+│   │   └── StreamOption.cs
+│   ├── Controllers
+│   │   ├── BotController.cs
+│   │   └── ImageController.cs
+│   ├── example.json
+│   ├── Extensions
+│   │   └── DependencyInjection
+│   │       └── HostApplicationBuilderExtension.cs
+│   ├── FfMpeg.Net
+│   │   ├── Codecs
+│   │   │   ├── CodecBase.cs
+│   │   │   ├── DecoderBase.cs
+│   │   │   ├── DependencyInjection
+│   │   │   │   └── ServiceCollectionExtension.cs
+│   │   │   ├── EncodedDataStream.cs
+│   │   │   ├── FfmpegBmpEncoder.cs
+│   │   │   ├── FfmpegLibWebpEncoder.cs
+│   │   │   └── GenericDecoder.cs
+│   │   ├── DataStructs
+│   │   │   ├── AvCodecContextWrapper.cs
+│   │   │   ├── AvFrameWrapper.cs
+│   │   │   ├── AvPacketWrapper.cs
+│   │   │   ├── DecoderContext.cs
+│   │   │   ├── EncoderContext.cs
+│   │   │   ├── VersionInfo.cs
+│   │   │   └── WrapperBase.cs
+│   │   ├── DependencyInjection
+│   │   │   └── IFfMpegServices.cs
+│   │   ├── Extensions
+│   │   │   └── FfMpegExtension.cs
+│   │   └── Utils
+│   │       ├── FfMpegUtils.cs
+│   │       ├── LibraryUtil.cs
+│   │       └── TimeSpanUtil.cs
+│   ├── FfMpegLogger.cs
+│   ├── HeartbeatWorker.cs
+│   ├── Program.cs
+│   ├── Properties
+│   │   └── launchSettings.json
+│   ├── schema.json
+│   ├── Services
+│   │   ├── CaptureService.cs
+│   │   ├── CodecService.cs
+│   │   ├── FaceMosaicProcessService.cs
+│   │   ├── IImageProcessService.cs
+│   │   └── WebpExportService.cs
+│   ├── StreamingCaptureBot.Core.csproj
+│   └── Utils
+│       └── BinarySizeFormatter.cs
+├── StreamingCaptureBot.FaceDetection
+│   ├── data.yaml
+│   ├── main.py
+│   ├── README.dataset.txt
+│   └── README.roboflow.txt
+├── StreamingCaptureBot.Impl
+│   └── Tencent
+│       ├── Extensions
+│       │   └── DependencyInjection
+│       │       └── HostApplicationBuilderExtension.cs
+│       ├── Json
+│       │   └── Serialization
+│       │       └── JsonIPAddressConverter.cs
+│       ├── Options
+│       │   └── TencentImplOption.cs
+│       ├── Protocols
+│       │   ├── EventContents
+│       │   │   ├── Dispatch.cs
+│       │   │   ├── HttpCallbackAck.cs
+│       │   │   ├── HttpCallbackVerify.cs
+│       │   │   └── IEventContent.cs
+│       │   └── Payload.cs
+│       ├── StreamingCaptureBot.Impl.Tencent.csproj
+│       ├── TencentWebhookWorker.cs
+│       └── Utils
+│           └── Sign
+│               ├── ISignProvider.cs
+│               └── SodiumSignProvider.cs
+├── StreamingCaptureBot.sln
+├── StreamingCaptureBot.Utils
+│   ├── ByteHex.cs
+│   ├── Extensions
+│   │   └── ByteExtension.cs
+│   └── StreamingCaptureBot.Utils.csproj
+└── tree.txt
