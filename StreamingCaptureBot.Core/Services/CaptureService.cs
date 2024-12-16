@@ -162,6 +162,16 @@ public sealed class CaptureService : IDisposable
                         _packet.PresentationTimeStamp,
                         _packet.DecodingTimeStamp
                     );
+                    unsafe
+                    {
+                        var stream = _inputFormatCtx->streams[_streamOption.Value.StreamIndex];
+
+                        _logger.LogDebug("TimeBase: packet({p1}/{p2}), stream({s1}/{s2}), codec({c1}/{c2})",
+                            _packet.UnmanagedPointer->time_base.num, _packet.UnmanagedPointer->time_base.den,
+                            stream->time_base.num, stream->time_base.den,
+                            _decoder.Context.TimeBase.num, _decoder.Context.TimeBase.den
+                        );
+                    }
 
                     _logger.LogInformation(
                         "Packet in stream[{index}] with size:{size}, pts(display):{pts:c}, dts(decode):{dts:c}.",
