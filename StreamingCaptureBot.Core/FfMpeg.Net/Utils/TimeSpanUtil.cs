@@ -4,7 +4,7 @@ namespace StreamingCaptureBot.Core.FfMpeg.Net.Utils;
 
 public static class TimeSpanUtil
 {
-    public static TimeSpan? FromFfmpeg(long value, AVRational timebase)
+    public static TimeSpan FromFfmpeg(long value, AVRational timebase)
     {
         if (timebase.den <= 0 || timebase.num < 0 || value == ffmpeg.AV_NOPTS_VALUE)
         {
