@@ -2,8 +2,7 @@
 
 用于从 直播流/视频流 中截取画面并发送的 QQ 机器人
 
-![image](https://github.com/user-attachments/assets/e84540c0-f078-40b1-ade7-104b9e2a3694)
-
+![Screenshot 2024-12-17 202621](https://github.com/user-attachments/assets/5fcff0b5-1895-4f5c-8bee-73126d829a49)
 
 Build Status: ![Build](https://github.com/nidbCN/StreamingCaptureBot/actions/workflows/test.yaml/badge.svg)
 
