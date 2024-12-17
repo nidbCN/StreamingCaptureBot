@@ -13,6 +13,8 @@ public sealed class CaptureService : IDisposable
     private readonly ILogger<CaptureService> _logger;
     private readonly IOptions<StreamOption> _streamOption;
 
+    private bool _streamIsOpen;
+
     private readonly BinarySizeFormatter _formatter;
 
     private readonly FfmpegLibWebpEncoder _encoder;
@@ -78,24 +80,38 @@ public sealed class CaptureService : IDisposable
         var url = _streamOption.Value.Url.AbsoluteUri;
         _logger.LogDebug("Open Input {url}.", url);
 
-        _inputFormatCtx = ffmpeg.avformat_alloc_context();
-        var formatCtx = _inputFormatCtx;
+        var formatCtx = ffmpeg.avformat_alloc_context();
+
+        if (formatCtx is null)
+        {
+            _streamIsOpen = false;
+            return;
+        }
 
         // 设置超时
         var openOptions = _openOptions;
 
         // 打开流
-        ffmpeg.avformat_open_input(&formatCtx, url, null, &openOptions)
-            .ThrowExceptionIfError();
+        if (ffmpeg.avformat_open_input(&formatCtx, url, null, &openOptions) == 0)
+        {
+            _streamIsOpen = true;
+            _inputFormatCtx = formatCtx;
+        }
     }
 
     private unsafe void CloseInput()
     {
-        _logger.LogDebug("Close Input.");
-
         var formatCtx = _inputFormatCtx;
-        ffmpeg.avformat_close_input(&formatCtx);
-        ffmpeg.avformat_free_context(formatCtx);
+
+        if (_streamIsOpen)
+        {
+            _logger.LogDebug("Close Input.");
+
+            ffmpeg.avformat_close_input(&formatCtx);
+            ffmpeg.avformat_free_context(formatCtx);
+
+            _streamIsOpen = false;
+        }
     }
 
     public void Dispose()
@@ -118,61 +134,43 @@ public sealed class CaptureService : IDisposable
 
         IDisposable? scope = null;
 
-        while (!timeoutTokenSource.Token.IsCancellationRequested)
+        do
         {
             // clear scope
             scope?.Dispose();
 
             try
             {
-                #region Find Stream
+                int readResult;
 
-                do
-                {
-                    _packet.Reset();
-
-                    int readResult;
-
-                    unsafe
-                    {
-                        readResult = ffmpeg.av_read_frame(_inputFormatCtx, _packet.UnmanagedPointer);
-                    }
-
-                    // EOF
-                    if (readResult == ffmpeg.AVERROR_EOF)
-                    {
-                        var message = FfMpegExtension.av_strerror(readResult);
-                        var error = new ApplicationException(message);
-
-                        _logger.LogError(error, message);
-                        throw new EndOfStreamException(message, error);
-                    }
-
-                    readResult.ThrowExceptionIfError();
-                } while (_packet.StreamIndex != _streamOption.Value.StreamIndex);
-                scope = _logger.BeginScope(_packet.ToString());
-
-                #endregion
-
-                // 取到了 stream 中的包
                 unsafe
                 {
-                    _logger.LogDebug("Original size: {size}, pts: {pts}, dts: {dts}.",
-                        _packet.Size,
-                        _packet.PresentationTimeStamp,
-                        _packet.DecodingTimeStamp
-                    );
-                    unsafe
-                    {
-                        var stream = _inputFormatCtx->streams[_streamOption.Value.StreamIndex];
+                    readResult = ffmpeg.av_read_frame(_inputFormatCtx, _packet.UnmanagedPointer);
+                }
 
-                        _logger.LogDebug("TimeBase: packet({p1}/{p2}), stream({s1}/{s2}), codec({c1}/{c2})",
-                            _packet.UnmanagedPointer->time_base.num, _packet.UnmanagedPointer->time_base.den,
-                            stream->time_base.num, stream->time_base.den,
-                            _decoder.Context.TimeBase.num, _decoder.Context.TimeBase.den
-                        );
-                    }
+                // EOF
+                if (readResult == ffmpeg.AVERROR_EOF)
+                {
+                    var message = FfMpegExtension.av_strerror(readResult);
+                    var error = new ApplicationException(message);
 
+                    _logger.LogError(error, message);
+                    throw new EndOfStreamException(message, error);
+                }
+
+                readResult.ThrowExceptionIfError();
+
+                // drop stream mis-matched packet
+                if (_packet.StreamIndex != _streamOption.Value.StreamIndex)
+                {
+                    _logger.LogInformation("Packet in stream[{id}] found, require stream[{req id}], igonre.",
+                        _packet.StreamIndex, _streamOption.Value.StreamIndex);
+                    _packet.Reset();
+                    continue;
+                }
+
+                unsafe
+                {
                     _logger.LogInformation(
                         "Packet in stream[{index}] with size:{size}, pts(display):{pts:c}, dts(decode):{dts:c}.",
                         _packet.StreamIndex,
@@ -181,38 +179,43 @@ public sealed class CaptureService : IDisposable
                         _packet.GetDecodingTimeSpan(_decoder.Context.TimeBase)
                     );
                 }
-                #region Filter packet
-                // 空包
+
+                // drop packet with invalid size
                 if (_packet.Size <= 0)
                 {
                     _logger.LogWarning("Packet with invalid size {size}, drop.",
                         string.Format(_formatter, "{0}", _packet.Size));
+
                     continue;
                 }
 
+                // drop packet without key frame
                 unsafe
                 {
-                    // 校验关键帧
                     if ((_packet.UnmanagedPointer->flags & ffmpeg.AV_PKT_FLAG_KEY) == 0x00)
                     {
                         _logger.LogInformation("Packet flag {flag:x8} not contains KEY frame, drop.",
                             _packet.UnmanagedPointer->flags);
+
                         continue;
                     }
                 }
 
-                // 校验 PTS
+                // drop packet with invalid pts
                 if (_packet.PresentationTimeStamp < 0)
                 {
                     _logger.LogWarning("Packet pts={pts:c} < 0, drop.",
                         _packet.GetPresentationTimeSpan(_decoder.Context.TimeBase));
+
                     continue;
                 }
-                #endregion
+
+                // decode
                 _decoder.Decode(_packet, ref frame);
 
                 scope?.Dispose();
 
+                // drop frame without key frame
                 if (frame.PictureType != AVPictureType.AV_PICTURE_TYPE_I)
                 {
                     using (_logger.BeginScope(frame.ToString()))
@@ -223,14 +226,15 @@ public sealed class CaptureService : IDisposable
                     continue;
                 }
 
-                // 解码正常
+                // success
                 break;
             }
             finally
             {
+                scope?.Dispose();
                 _packet.Reset();
             }
-        }
+        } while (!timeoutTokenSource.Token.IsCancellationRequested);
 
         if (timeoutTokenSource.Token.IsCancellationRequested)
         {
@@ -330,8 +334,6 @@ public sealed class CaptureService : IDisposable
                 var decodedFrame = DecodeNextFrameUnsafe();
                 using (_logger.BeginScope(decodedFrame.ToString()))
                 {
-                    CloseInput();
-
                     var queue = _encoder.Encode(decodedFrame);
 
                     if (queue.Count > 1)
@@ -358,6 +360,7 @@ public sealed class CaptureService : IDisposable
             }
             finally
             {
+                CloseInput();
                 _semaphore.Release();
             }
         }, cancellationToken);

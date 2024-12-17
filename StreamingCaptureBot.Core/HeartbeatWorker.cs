@@ -21,7 +21,7 @@ public class HeartBeatWorker(ILogger<HeartBeatWorker> logger,
         {
             var assemblyName = GetType().Assembly.GetName();
 
-            var message = "Heartbert time: {0:F}.\n"
+            var message = "Heartbeat time: {0:F}.\n"
                           + $"Bot {botCtx.BotName}@{botCtx.BotUin} heartbeat.\n"
                           + $"Bot app {assemblyName.Name} {assemblyName.Version} "
                           + $"running on {Environment.OSVersion.VersionString}(.NET {Environment.Version}), "
