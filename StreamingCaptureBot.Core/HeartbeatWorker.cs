@@ -3,33 +3,45 @@ using Lagrange.Core.Common.Interface.Api;
 using Lagrange.Core.Message;
 using Microsoft.Extensions.Options;
 using StreamingCaptureBot.Core.Configs;
+using StreamingCaptureBot.Core.Utils;
 
 namespace StreamingCaptureBot.Core;
 
 public class HeartBeatWorker(ILogger<HeartBeatWorker> logger,
+    IOptions<BotOption> botOptions,
     BotContext botCtx,
-    IOptions<BotOption> botOptions) : BackgroundService
+    BinarySizeFormatter formatter) : BackgroundService
 {
     private readonly HttpClient _httpClient = new();
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        while (!stoppingToken.IsCancellationRequested
-               && (botOptions.Value.NotificationConfig.NotifyWebhookOnHeartbeat
-               || botOptions.Value.NotificationConfig.NotifyAdminOnHeartbeat))
+        if (botOptions.Value.NotificationConfig.NotifyWebhookOnHeartbeat
+            || botOptions.Value.NotificationConfig.NotifyAdminOnHeartbeat)
         {
             var assemblyName = GetType().Assembly.GetName();
-            var msg = $"Bot {botCtx.BotName}@{botCtx.BotUin} running. Time: `{DateTime.Now:F}`, Program: {assemblyName.Name} {assemblyName.Version}.";
 
-            // delay before heartbeat. at the beginning of first loop bot maybe not logged in.
-            await Task.Delay(TimeSpan.FromHours(botOptions.Value.NotificationConfig.HeartbeatIntervalHour), stoppingToken);
+            var message = "Time: `{0:F}`."
+                          + $"Bot {botCtx.BotName}@{botCtx.BotUin} running."
+                          + $"Bot app {assemblyName.Name} {assemblyName.Version} "
+                          + $"running on {Environment.OSVersion.VersionString}(.NET {Environment.Version})."
+                          + "Used memory: {1}.";
 
-            if (botOptions.Value.NotificationConfig is
-                { NotifyWebhookOnHeartbeat: true, WebhookUrl: not null })
-                await ProcessWebhookHeartbeatAsync(msg, stoppingToken);
+            while (!stoppingToken.IsCancellationRequested)
+            {
+                // delay before heartbeat. at the beginning of first loop bot maybe not logged in.
+                await Task.Delay(botOptions.Value.NotificationConfig.HeartbeatInterval,
+                    stoppingToken);
 
-            if (botOptions.Value.NotificationConfig.NotifyAdminOnHeartbeat)
-                await ProcessBotHeartbeatAsync(msg, stoppingToken);
+                message = string.Format(formatter, message, DateTime.Now, Environment.WorkingSet);
+
+                if (botOptions.Value.NotificationConfig is
+                    { NotifyWebhookOnHeartbeat: true, WebhookUrl: not null })
+                    await ProcessWebhookHeartbeatAsync(message, stoppingToken);
+
+                if (botOptions.Value.NotificationConfig.NotifyAdminOnHeartbeat)
+                    await ProcessBotHeartbeatAsync(message, stoppingToken);
+            }
         }
     }
 

@@ -23,7 +23,7 @@ public record NotificationConfig
     public bool NotifyWebhookOnException { get; set; } = false;
     public bool NotifyAdminOnHeartbeat { get; set; } = false;
     public bool NotifyWebhookOnHeartbeat { get; set; } = false;
-    public uint HeartbeatIntervalHour { get; set; } = 6;
+    public TimeSpan HeartbeatInterval { get; set; } = TimeSpan.FromHours(1);
     public Uri? WebhookUrl { get; set; }
     public IDictionary<string, string?>? WebhookHeaders { get; set; }
 }
