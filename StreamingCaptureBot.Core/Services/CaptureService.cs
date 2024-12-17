@@ -126,18 +126,12 @@ public sealed class CaptureService : IDisposable
     /// 解码下一关键帧（非线程安全）
     /// </summary>
     /// <returns></returns>
-    public AvFrameWrapper DecodeNextFrameUnsafe()
+    public void DecodeNextFrameUnsafe()
     {
-        var frame = _frame;
-
         var timeoutTokenSource = new CancellationTokenSource(_streamOption.Value.CodecTimeout);
-
-        IDisposable? scope = null;
-
         do
         {
-            // clear scope
-            scope?.Dispose();
+            IDisposable? scope = null;
 
             try
             {
@@ -160,24 +154,38 @@ public sealed class CaptureService : IDisposable
 
                 readResult.ThrowExceptionIfError();
 
+                scope = _logger.BeginScope(_packet.ToString());
+
                 // drop stream mis-matched packet
                 if (_packet.StreamIndex != _streamOption.Value.StreamIndex)
                 {
-                    _logger.LogInformation("Packet in stream[{id}] found, require stream[{req id}], igonre.",
+                    _logger.LogInformation("Received packet from stream[{id}], require stream[{req id}], drop.",
                         _packet.StreamIndex, _streamOption.Value.StreamIndex);
-                    _packet.Reset();
+
                     continue;
                 }
 
                 unsafe
                 {
                     _logger.LogInformation(
-                        "Packet in stream[{index}] with size:{size}, pts(display):{pts:c}, dts(decode):{dts:c}.",
+                        "Received packet from stream[{index}] with size:{size}, pts(display):{pts:c}, dts(decode):{dts:c}.",
                         _packet.StreamIndex,
                         string.Format(_formatter, "{0}", _packet.Size),
                         _packet.GetPresentationTimeSpan(_decoder.Context.TimeBase),
                         _packet.GetDecodingTimeSpan(_decoder.Context.TimeBase)
                     );
+                }
+
+                // drop packet without key frame
+                unsafe
+                {
+                    if ((_packet.UnmanagedPointer->flags & ffmpeg.AV_PKT_FLAG_KEY) == 0x00)
+                    {
+                        _logger.LogInformation("Packet flag 0x{flag:x8} not contains KEY frame, drop.",
+                            _packet.UnmanagedPointer->flags);
+
+                        continue;
+                    }
                 }
 
                 // drop packet with invalid size
@@ -187,18 +195,6 @@ public sealed class CaptureService : IDisposable
                         string.Format(_formatter, "{0}", _packet.Size));
 
                     continue;
-                }
-
-                // drop packet without key frame
-                unsafe
-                {
-                    if ((_packet.UnmanagedPointer->flags & ffmpeg.AV_PKT_FLAG_KEY) == 0x00)
-                    {
-                        _logger.LogInformation("Packet flag {flag:x8} not contains KEY frame, drop.",
-                            _packet.UnmanagedPointer->flags);
-
-                        continue;
-                    }
                 }
 
                 // drop packet with invalid pts
@@ -211,6 +207,7 @@ public sealed class CaptureService : IDisposable
                 }
 
                 // decode
+                var frame = _frame;
                 _decoder.Decode(_packet, ref frame);
 
                 scope?.Dispose();
@@ -254,8 +251,6 @@ public sealed class CaptureService : IDisposable
                 // ffmpeg.av_hwframe_transfer_data(frame, frame, 0).ThrowExceptionIfError();
             }
         }
-
-        return frame;
     }
 
     /// <summary>
@@ -331,7 +326,9 @@ public sealed class CaptureService : IDisposable
 
                 OpenInput();
 
-                var decodedFrame = DecodeNextFrameUnsafe();
+                DecodeNextFrameUnsafe();
+                var decodedFrame = _frame;
+
                 using (_logger.BeginScope(decodedFrame.ToString()))
                 {
                     var queue = _encoder.Encode(decodedFrame);
@@ -361,6 +358,7 @@ public sealed class CaptureService : IDisposable
             finally
             {
                 CloseInput();
+                _frame.Reset();
                 _semaphore.Release();
             }
         }, cancellationToken);
