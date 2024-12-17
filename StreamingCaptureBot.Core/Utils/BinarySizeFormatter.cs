@@ -1,4 +1,6 @@
-﻿namespace StreamingCaptureBot.Core.Utils;
+﻿using System.Globalization;
+
+namespace StreamingCaptureBot.Core.Utils;
 
 public sealed class BinarySizeFormatter : IFormatProvider, ICustomFormatter
 {
@@ -17,7 +19,7 @@ public sealed class BinarySizeFormatter : IFormatProvider, ICustomFormatter
          int size => size < 0 ? '-' + FormatSize((uint)-size) : FormatSize((uint)size),
          ulong uLongSize => FormatSize(uLongSize),
          long longSize => longSize < 0 ? '-' + FormatSize((ulong)-longSize) : FormatSize((ulong)longSize),
-         _ => string.Format(format!, arg)
+         _ => HandleOtherFormats(format, arg)
      };
 
     private static string FormatSize(ulong size)
@@ -38,4 +40,14 @@ public sealed class BinarySizeFormatter : IFormatProvider, ICustomFormatter
             < _1g => $"{size / (double)_1m:F2}MB",
             _ => $"{size / (double)_1g:F2}GB"
         };
+
+    private string HandleOtherFormats(string? format, object? arg)
+    {
+        if (arg is IFormattable formattable)
+            return formattable.ToString(format, CultureInfo.CurrentCulture);
+        else if (arg is not null)
+            return arg.ToString();
+        else
+            return string.Empty;
+    }
 }
