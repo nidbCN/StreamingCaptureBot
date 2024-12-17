@@ -74,7 +74,7 @@ public class HeartBeatWorker(ILogger<HeartBeatWorker> logger,
                         .Text(message)
                         .Build();
                     await botCtx.SendMessage(botMessage);
-                    logger.LogInformation("Bot heartbeat invoked.");
+                    logger.LogInformation("Bot heartbeat invoked, message: `{msg}`.", message);
                 });
         }
         catch (Exception e)
