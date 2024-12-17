@@ -21,7 +21,7 @@ public class HeartBeatWorker(ILogger<HeartBeatWorker> logger,
         {
             var assemblyName = GetType().Assembly.GetName();
 
-            var message = "Heartbeat time: {0:G}.\n"
+            var template = "Heartbeat time: {0:G}.\n"
                           + $"From bot {botCtx.BotName}@{botCtx.BotUin}\n"
                           + $"Bot app {assemblyName.Name} v{assemblyName.Version}, "
                           + $"running on {Environment.OSVersion.VersionString}(.NET {Environment.Version}) "
@@ -33,7 +33,7 @@ public class HeartBeatWorker(ILogger<HeartBeatWorker> logger,
                 await Task.Delay(botOptions.Value.NotificationConfig.HeartbeatInterval,
                     stoppingToken);
 
-                message = string.Format(formatter, message, DateTime.Now, Environment.WorkingSet);
+                var message = string.Format(formatter, template, DateTime.Now, Environment.WorkingSet);
 
                 if (botOptions.Value.NotificationConfig is
                     { NotifyWebhookOnHeartbeat: true, WebhookUrl: not null })
