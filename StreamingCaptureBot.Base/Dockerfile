@@ -48,7 +48,7 @@ COPY ./scripts/*.sh $WORK_DIR
 
 ENV OUTPUT_PATH=$WORK_DIR/$OUTPUT_DIR
 RUN ./pre-build.sh
-RUN make -j16 EXTRA_VERSION=camera_capture_bot-build && make install
+RUN make -j16 EXTRA_VERSION=streaming_capture_bot-build && make install
 RUN ./post-build.sh
 
 # setup .NET min-runtime environment
