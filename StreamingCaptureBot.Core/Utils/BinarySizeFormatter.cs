@@ -17,7 +17,7 @@ public sealed class BinarySizeFormatter : IFormatProvider, ICustomFormatter
          int size => size < 0 ? '-' + FormatSize((uint)-size) : FormatSize((uint)size),
          ulong uLongSize => FormatSize(uLongSize),
          long longSize => longSize < 0 ? '-' + FormatSize((ulong)-longSize) : FormatSize((ulong)longSize),
-         _ => string.Format(formatProvider, format!, arg)
+         _ => string.Format(format!, arg)
      };
 
     private static string FormatSize(ulong size)

@@ -21,11 +21,11 @@ public class HeartBeatWorker(ILogger<HeartBeatWorker> logger,
         {
             var assemblyName = GetType().Assembly.GetName();
 
-            var message = "Time: `{0:F}`."
-                          + $"Bot {botCtx.BotName}@{botCtx.BotUin} running."
+            var message = "Heartbert time: {0:F}.\n"
+                          + $"Bot {botCtx.BotName}@{botCtx.BotUin} heartbeat.\n"
                           + $"Bot app {assemblyName.Name} {assemblyName.Version} "
-                          + $"running on {Environment.OSVersion.VersionString}(.NET {Environment.Version})."
-                          + "Used memory: {1}.";
+                          + $"running on {Environment.OSVersion.VersionString}(.NET {Environment.Version}), "
+                          + "with {1} memory used.";
 
             while (!stoppingToken.IsCancellationRequested)
             {
