@@ -16,13 +16,17 @@
           "description": "live stream Uri, can be rtsp/rtmp/http... etc, support all format that your ffmpeg build supported.",
           "type": "string"
         },
+        "CacheTimeout":{
+          "description": "default \"00:00:15\", cache time for last captured image",
+          "type": "string"
+        },
         "ConnectTimeout": {
-          "description": "default 1200, in ms, timeout value for connect to stream url",
+          "description": "default 0, timeout value for connect to stream url, directly pass to ffmpeg if v > 0, see https://ffmpeg.org/ffmpeg-protocols.html",
           "type": "integer"
         },
         "CodecTimeout": {
-          "description": "default 6000, in ms, timeout to decode or encode a frame",
-          "type": "integer"
+          "description": "default \"00:00:12\", timeout to decode or encode a frame",
+          "type": "string"
         },
         "CodecThreads": {
           "description": "recommend `<cpus>`, default auto-detect, threads to decode and encode, negivate or zero for auto-detect",
@@ -87,9 +91,9 @@
               "description": "default `false`.",
               "type": "boolean"
             },
-            "HeartbeatIntervalHour": {
-              "description": "default `6`, in hour.",
-              "type": "integer",
+            "HeartbeatInterval": {
+              "description": "default \"02:00:00\".",
+              "type": "string",
               "minimum": 0
             },
             "WebhookUrl": {
