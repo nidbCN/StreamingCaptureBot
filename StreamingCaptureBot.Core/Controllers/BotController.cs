@@ -18,8 +18,8 @@ public class BotController(
             if (!result || image is null)
             {
                 // 编解码失败
-                logger.LogError("Decode failed, send error message.");
-                response.Message = "杰哥不要！（图像编解码失败）";
+                logger.LogError("Capture failed, send error message.");
+                response.Message = "杰哥不要！（图像获取失败）";
             }
             else
             {
@@ -29,8 +29,8 @@ public class BotController(
         }
         catch (Exception e)
         {
-            logger.LogError(e, "Failed to decode and encode.");
-            response.Message = "你最好不要说出去，我知道你的学校和班级：\n" + e.Message + e.StackTrace;
+            logger.LogError(e, "Failed to decode or encode.");
+            response.Message = "你最好不要说出去，我知道你的学校和班级（图像编解码崩溃）：\n" + e.Message + e.StackTrace;
         }
         finally
         {

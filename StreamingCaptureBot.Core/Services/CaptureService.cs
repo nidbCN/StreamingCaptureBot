@@ -233,7 +233,7 @@ public sealed class CaptureService : IDisposable
         {
             // 解码失败
             var error = new TaskCanceledException("Decode timeout.");
-            _logger.LogError(error, "Failed to decode.\n");
+            _logger.LogError(error, "Failed to decode.");
 
             throw error;
         }
@@ -314,11 +314,11 @@ public sealed class CaptureService : IDisposable
                 var captureTimeSpan = DateTime.Now - LastCaptureTime;
                 if (LastCapturedImage != null && captureTimeSpan < _streamOption.Value.CacheTimeout)
                 {
-                    _logger.LogInformation("Return image cached {time} ago.", captureTimeSpan);
+                    _logger.LogInformation("Return image cached {time:c} ago.", captureTimeSpan);
                     return (true, LastCapturedImage);
                 }
 
-                _logger.LogInformation("Image cached {time} ago has expired, capture new.", captureTimeSpan);
+                _logger.LogInformation("Image cached {time:c} ago has expired, capture new.", captureTimeSpan);
 
                 OpenInput();
 
