@@ -1,10 +1,10 @@
 ﻿using System.Runtime.InteropServices;
 using FFmpeg.AutoGen.Abstractions;
 using FfMpegLib.Net.DataStructs;
-using StreamingCaptureBot.Core.Extensions;
+using StreamingCaptureBot.Core.Bots.LagrangeBot.Extensions;
 using StreamingCaptureBot.Core.Utils;
 
-namespace StreamingCaptureBot.Core.FfMpeg.Net.Codecs;
+namespace StreamingCaptureBot.Core.FfMpeg.Codecs;
 
 public class CodecBase(ILogger logger, BinarySizeFormatter binarySizeFormat) : IDisposable
 {

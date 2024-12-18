@@ -1,4 +1,4 @@
-﻿namespace StreamingCaptureBot.Host.Bot;
+﻿namespace StreamingCaptureBot.Core.Bot;
 internal class MessageResult
 {
 }

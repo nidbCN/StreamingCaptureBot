@@ -1,7 +1,7 @@
 ﻿using FFmpeg.AutoGen.Abstractions;
 using FfMpegLib.Net.DataStructs;
 
-namespace StreamingCaptureBot.Core.FfMpeg.Net.Codecs;
+namespace StreamingCaptureBot.Core.FfMpeg.Codecs;
 
 public class GenericDecoder : DecoderBase
 {

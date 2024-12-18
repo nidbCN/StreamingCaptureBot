@@ -1,4 +1,4 @@
-﻿namespace StreamingCaptureBot.Host.Bot.Routing;
+﻿namespace StreamingCaptureBot.Core.Bot.Routing;
 internal class BindFriendMessageAttribute
 {
 }

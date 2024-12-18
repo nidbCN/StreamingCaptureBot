@@ -1,5 +1,5 @@
 ﻿using FFmpeg.AutoGen.Abstractions;
-using StreamingCaptureBot.Core.Extensions;
+using StreamingCaptureBot.Core.Bots.LagrangeBot.Extensions;
 using StreamingCaptureBot.Core.Utils;
 
 namespace StreamingCaptureBot.Core.FfMpeg.Net.Codecs;
