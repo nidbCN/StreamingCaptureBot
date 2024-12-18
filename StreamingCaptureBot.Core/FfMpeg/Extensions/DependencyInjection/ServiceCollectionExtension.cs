@@ -18,7 +18,7 @@ public static class ServiceCollectionExtension
     public static IServiceCollection AddCodecs(this IServiceCollection services)
     {
         // logger
-        services.AddSingleton(sp =>
+        services.AddHostedService(sp =>
         {
             if (!_hasConfigured)
                 ConfigureFfMpeg(sp);
