@@ -12,28 +12,23 @@ public static class LibraryUtil
     public static IntPtr MacOsFfMpegDllImportResolver(string libraryName, Assembly assembly, DllImportSearchPath? searchPath)
         => FfMpegDllImportResolverCore(libraryName, assembly, searchPath, "dylib");
 
-    public static IntPtr FfMpegDllImportResolverCore(string libraryName, Assembly assembly, DllImportSearchPath? searchPath, string extension)
+    public static IntPtr FfMpegDllImportResolverCore(ReadOnlySpan<char> loadNameSpan, Assembly assembly, DllImportSearchPath? searchPath, string extension)
     {
-        var libraryNameSpan = libraryName.AsSpan();
-        var partedIndex = libraryNameSpan.IndexOf('-');
+        var partedIndex = loadNameSpan.IndexOf('-');
 
-        if (libraryNameSpan.LastIndexOf('-') != partedIndex)
-        {
-            // format not ffmpeg library
-            return NativeLibrary.Load(libraryName, assembly, searchPath);
-        }
+        // contains 0 or mult '-', format not ffmpeg library
+        if (partedIndex == -1 || loadNameSpan.LastIndexOf('-') != partedIndex)
+            return NativeLibrary.Load(loadNameSpan.ToString(), assembly, searchPath);
 
-        var pureName = libraryNameSpan[..partedIndex];
+        var libraryName = loadNameSpan[..partedIndex];
 
-        if (!DynamicallyLoadedBindings.LibraryVersionMap.ContainsKey(pureName.ToString()))
-        {
-            // not ffmpeg library
-            return NativeLibrary.Load(libraryName, assembly, searchPath);
-        }
+        // library not in map table, not ffmpeg library
+        if (!DynamicallyLoadedBindings.LibraryVersionMap.ContainsKey(libraryName.ToString()))
+            return NativeLibrary.Load(loadNameSpan.ToString(), assembly, searchPath);
 
-        var versionName = libraryNameSpan[(partedIndex + 1)..];
+        var versionName = loadNameSpan[(partedIndex + 1)..];
 
-        var styledName = $"{pureName}.{extension}.{versionName}";
+        var styledName = $"{libraryName}.{extension}.{versionName}";
         return NativeLibrary.Load(styledName, assembly, searchPath);
     }
 }
