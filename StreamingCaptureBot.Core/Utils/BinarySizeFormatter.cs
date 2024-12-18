@@ -46,7 +46,7 @@ public sealed class BinarySizeFormatter : IFormatProvider, ICustomFormatter
         if (arg is IFormattable formattable)
             return formattable.ToString(format, CultureInfo.CurrentCulture);
         else if (arg is not null)
-            return arg.ToString();
+            return arg?.ToString() ?? string.Empty;
         else
             return string.Empty;
     }
