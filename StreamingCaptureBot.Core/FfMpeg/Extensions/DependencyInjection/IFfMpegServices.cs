@@ -1,4 +1,4 @@
-﻿namespace StreamingCaptureBot.Core.FfMpeg.Net.DependencyInjection;
+﻿namespace StreamingCaptureBot.Core.FfMpeg.Extensions.DependencyInjection;
 
 public interface IFfMpegServices
 {

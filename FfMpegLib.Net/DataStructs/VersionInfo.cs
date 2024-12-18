@@ -1,6 +1,6 @@
 ﻿using System.Runtime.InteropServices;
 
-namespace StreamingCaptureBot.Core.FfMpeg.Net.DataStructs;
+namespace FfMpegLib.Net.DataStructs;
 
 [StructLayout(LayoutKind.Explicit)]
 public struct VersionInfo(uint version)

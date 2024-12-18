@@ -3,14 +3,15 @@ using FFmpeg.AutoGen.Bindings.DynamicallyLinked;
 using FFmpeg.AutoGen.Bindings.DynamicallyLoaded;
 using Microsoft.Extensions.Options;
 using StreamingCaptureBot.Core.Configs;
-using StreamingCaptureBot.Core.FfMpeg.Net.Extensions;
 using System.Runtime.InteropServices;
 using System.Text;
-using StreamingCaptureBot.Core.FfMpeg.Net.DataStructs;
-using StreamingCaptureBot.Core.FfMpeg.Net.Utils;
+using FfMpegLib.Net.DataStructs;
+using FfMpegLib.Net.Extensions;
+using FfMpegLib.Net.Utils;
 using StreamingCaptureBot.Core.Utils;
+using StreamingCaptureBot.Core.FfMpeg.Net.Codecs;
 
-namespace StreamingCaptureBot.Core.FfMpeg.Net.Codecs.DependencyInjection;
+namespace StreamingCaptureBot.Core.FfMpeg.Extensions.DependencyInjection;
 
 public static class ServiceCollectionExtension
 {
@@ -83,7 +84,7 @@ public static class ServiceCollectionExtension
                         dec.Context.UnmanagedPointer, stream->codecpar)
                     .ThrowExceptionIfError();
                 dec.Context.TimeBase = stream->time_base;
-                
+
                 logger.LogDebug("Close Input.");
 
                 ffmpeg.avformat_close_input(&formatCtx);

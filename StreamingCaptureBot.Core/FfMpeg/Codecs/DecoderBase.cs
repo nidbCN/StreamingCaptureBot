@@ -1,6 +1,6 @@
 ﻿using FFmpeg.AutoGen.Abstractions;
-using StreamingCaptureBot.Core.FfMpeg.Net.DataStructs;
-using StreamingCaptureBot.Core.FfMpeg.Net.Extensions;
+using FfMpegLib.Net.DataStructs;
+using StreamingCaptureBot.Core.Extensions;
 
 namespace StreamingCaptureBot.Core.FfMpeg.Net.Codecs;
 

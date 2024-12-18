@@ -1,7 +1,7 @@
 ﻿using FFmpeg.AutoGen.Abstractions;
-using StreamingCaptureBot.Core.FfMpeg.Net.Utils;
+using FfMpegLib.Net.Utils;
 
-namespace StreamingCaptureBot.Core.FfMpeg.Net.DataStructs;
+namespace FfMpegLib.Net.DataStructs;
 
 public class AvFrameWrapper : WrapperBase<AVFrame>
 {

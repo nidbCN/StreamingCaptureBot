@@ -1,6 +1,6 @@
 ﻿using FFmpeg.AutoGen.Abstractions;
 
-namespace StreamingCaptureBot.Core.FfMpeg.Net.Utils;
+namespace FfMpegLib.Net.Utils;
 
 public static class TimeSpanUtil
 {

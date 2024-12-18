@@ -2,7 +2,7 @@
 using System.Runtime.InteropServices;
 using FFmpeg.AutoGen.Bindings.DynamicallyLoaded;
 
-namespace StreamingCaptureBot.Core.FfMpeg.Net.Utils;
+namespace FfMpegLib.Net.Utils;
 
 public static class LibraryUtil
 {
@@ -16,7 +16,7 @@ public static class LibraryUtil
     {
         var partedIndex = loadNameSpan.IndexOf('-');
 
-        // contains 0 or mult '-', format not ffmpeg library
+        // contains 0 or multi '-', format not ffmpeg library
         if (partedIndex == -1 || loadNameSpan.LastIndexOf('-') != partedIndex)
             return NativeLibrary.Load(loadNameSpan.ToString(), assembly, searchPath);
 

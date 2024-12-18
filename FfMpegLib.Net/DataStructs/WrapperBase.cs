@@ -1,4 +1,4 @@
-﻿namespace StreamingCaptureBot.Core.FfMpeg.Net.DataStructs;
+﻿namespace FfMpegLib.Net.DataStructs;
 
 public abstract class WrapperBase<T> : IDisposable where T : unmanaged
 {

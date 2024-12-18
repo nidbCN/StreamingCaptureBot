@@ -2,7 +2,7 @@ using StreamingCaptureBot.Core;
 using StreamingCaptureBot.Core.Configs;
 using StreamingCaptureBot.Core.Controllers;
 using StreamingCaptureBot.Core.Extensions.DependencyInjection;
-using StreamingCaptureBot.Core.FfMpeg.Net.Codecs.DependencyInjection;
+using StreamingCaptureBot.Core.FfMpeg.Extensions.DependencyInjection;
 using StreamingCaptureBot.Core.Services;
 using StreamingCaptureBot.Core.Utils;
 using StreamingCaptureBot.Impl.Tencent.Extensions.DependencyInjection;

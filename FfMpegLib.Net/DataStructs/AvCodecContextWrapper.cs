@@ -1,7 +1,7 @@
 ﻿using FFmpeg.AutoGen.Abstractions;
-using StreamingCaptureBot.Core.FfMpeg.Net.Extensions;
+using FfMpegLib.Net.Extensions;
 
-namespace StreamingCaptureBot.Core.FfMpeg.Net.DataStructs;
+namespace FfMpegLib.Net.DataStructs;
 
 public class AvCodecContextWrapper : WrapperBase<AVCodecContext>
 {

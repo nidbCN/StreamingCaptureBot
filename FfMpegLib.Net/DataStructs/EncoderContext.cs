@@ -1,6 +1,6 @@
 ﻿using FFmpeg.AutoGen.Abstractions;
 
-namespace StreamingCaptureBot.Core.FfMpeg.Net.DataStructs;
+namespace FfMpegLib.Net.DataStructs;
 
 public class EncoderContext : AvCodecContextWrapper
 {

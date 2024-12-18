@@ -1,7 +1,8 @@
 ﻿using System.Runtime.InteropServices;
 using FFmpeg.AutoGen.Abstractions;
 
-namespace StreamingCaptureBot.Core.FfMpeg.Net.Extensions;
+namespace FfMpegLib.Net.Extensions;
+
 public static class FfMpegExtension
 {
     public static unsafe string? av_strerror(int error)

@@ -18,6 +18,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "StreamingCaptureBot.Impl", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StreamingCaptureBot.Utils", "StreamingCaptureBot.Utils\StreamingCaptureBot.Utils.csproj", "{4F3C21BD-3AA2-415A-8300-6D561F88DDBC}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FfMpegLib.Net", "FfMpegLib.Net\FfMpegLib.Net.csproj", "{42CB1151-209E-4263-A81C-CDB32AC356F3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -40,6 +42,10 @@ Global
 		{4F3C21BD-3AA2-415A-8300-6D561F88DDBC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4F3C21BD-3AA2-415A-8300-6D561F88DDBC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4F3C21BD-3AA2-415A-8300-6D561F88DDBC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{42CB1151-209E-4263-A81C-CDB32AC356F3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{42CB1151-209E-4263-A81C-CDB32AC356F3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{42CB1151-209E-4263-A81C-CDB32AC356F3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{42CB1151-209E-4263-A81C-CDB32AC356F3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

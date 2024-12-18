@@ -1,6 +1,5 @@
 ﻿using FFmpeg.AutoGen.Abstractions;
 using Microsoft.Extensions.Options;
-using StreamingCaptureBot.Core.Configs;
 
 namespace StreamingCaptureBot.Core;
 

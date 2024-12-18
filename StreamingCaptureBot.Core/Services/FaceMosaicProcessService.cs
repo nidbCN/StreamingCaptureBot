@@ -1,10 +1,9 @@
 ﻿using System.Text.Json;
 using FFmpeg.AutoGen.Abstractions;
+using FfMpegLib.Net.DataStructs;
 using Microsoft.Extensions.Options;
 using StreamingCaptureBot.Core.Configs;
-using StreamingCaptureBot.Core.FfMpeg.Net.DataStructs;
-using StreamingCaptureBot.Core.FfMpeg.Net.Extensions;
-using StreamingCaptureBot.Core.FfMpeg.Net.Utils;
+using StreamingCaptureBot.Core.Extensions;
 
 namespace StreamingCaptureBot.Core.Services;
 
