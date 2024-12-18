@@ -12,6 +12,7 @@ using Microsoft.Extensions.Options;
 using StreamCaptureBot.Utils.Extensions;
 using StreamingCaptureBot.Core.Configs;
 using StreamingCaptureBot.Core.Controllers;
+using StreamingCaptureBot.Core.Services;
 using BotLogLevel = Lagrange.Core.Event.EventArg.LogLevel;
 using LogLevel = Microsoft.Extensions.Logging.LogLevel;
 
@@ -23,6 +24,7 @@ internal class LagrangeHost(
     IOptions<LagrangeImplOption> implOptions,
     BotContext botCtx,
     IsolatedStorageFile isoStorage,
+    StoreService storeService,
     BotController controller)
     : IHostedLifecycleService
 {
@@ -45,17 +47,14 @@ internal class LagrangeHost(
         }
     }
 
-    private async Task ProcessBotOnline(BotContext bot, BotOnlineEvent _)
+    private async Task ProcessBotOnline(BotContext thisBot, BotOnlineEvent _)
     {
-        logger.LogInformation("Login Success! Bot `{name}@{id}` online.", bot.BotName, bot.BotUin);
+        logger.LogInformation("Login Success! Bot `{name}@{id}` online.", thisBot.BotName, thisBot.BotUin);
 
         // save device info and keystore
         try
         {
-            await using var deviceInfoFileStream = isoStorage.OpenFile(implOptions.Value.DeviceInfoFile, FileMode.Create, FileAccess.Write);
-            await JsonSerializer.SerializeAsync(deviceInfoFileStream, botCtx.UpdateDeviceInfo());
-
-            var keyStore = botCtx.UpdateKeystore();
+            var keyStore = thisBot.UpdateKeystore();
 
             // update password hash
             if (string.IsNullOrEmpty(keyStore.PasswordMd5))
@@ -69,8 +68,8 @@ internal class LagrangeHost(
                 }
             }
 
-            await using var keyFileStream = isoStorage.OpenFile(implOptions.Value.KeyStoreFile, FileMode.Create, FileAccess.Write);
-            await JsonSerializer.SerializeAsync(keyFileStream, keyStore);
+            await Task.WhenAll(storeService.SaveKeyStoreAsync(keyStore),
+                storeService.SaveDeviceInfoAsync(thisBot.UpdateDeviceInfo()));
         }
         catch (Exception e)
         {
@@ -91,7 +90,7 @@ internal class LagrangeHost(
 
         appLifetime.StopApplication();
     }
-    
+
     private async Task ProcessMessage(MessageChain message, BotContext thisBot)
     {
         var isGroup = message.GroupUin is not null;

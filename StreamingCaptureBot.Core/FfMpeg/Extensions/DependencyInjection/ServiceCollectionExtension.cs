@@ -8,8 +8,8 @@ using System.Text;
 using FfMpegLib.Net.DataStructs;
 using FfMpegLib.Net.Extensions;
 using FfMpegLib.Net.Utils;
+using StreamingCaptureBot.Core.FfMpeg.Codecs;
 using StreamingCaptureBot.Core.Utils;
-using StreamingCaptureBot.Core.FfMpeg.Net.Codecs;
 
 namespace StreamingCaptureBot.Core.FfMpeg.Extensions.DependencyInjection;
 
