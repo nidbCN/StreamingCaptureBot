@@ -1,6 +1,4 @@
 ﻿using System.Net;
-using System.Text.Json.Serialization;
-using StreamingCaptureBot.Impl.Tencent.Json.Serialization;
 
 namespace StreamingCaptureBot.Impl.Tencent.Options;
 public record TencentImplOption

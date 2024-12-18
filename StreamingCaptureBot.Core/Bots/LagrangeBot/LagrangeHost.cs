@@ -1,5 +1,4 @@
-﻿using System.IO.IsolatedStorage;
-using System.Text;
+﻿using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Lagrange.Core;
@@ -23,7 +22,6 @@ internal class LagrangeHost(
     IOptions<BotOption> botOptions,
     IOptions<LagrangeImplOption> implOptions,
     BotContext botCtx,
-    IsolatedStorageFile isoStorage,
     StoreService storeService,
     BotController controller)
     : IHostedLifecycleService
@@ -43,7 +41,7 @@ internal class LagrangeHost(
                 BotLogLevel.Exception => LogLevel.Error,
                 BotLogLevel.Fatal => LogLevel.Critical,
                 _ => throw new NotImplementedException(),
-            }, "event time:{time}, msg:'{msg}'", @event.EventTime.ToLocalTime(), @event.EventMessage);
+            }, "{time}, msg:'{msg}'", @event.EventTime.ToLocalTime(), @event.EventMessage);
         }
     }
 
@@ -81,12 +79,13 @@ internal class LagrangeHost(
     {
         logger.LogError("Bot `{name}@{id}` offline.", bot.BotName, bot.BotUin);
 
-        //    if (!_botOptions.Value.NotificationConfig.NotifyWebhookOnHeartbeat) return;
-
-        //    logger.LogWarning("{option} set true, send HTTP POST to webhook.",
-        //        nameof(_botOptions.Value.NotificationConfig.NotifyWebhookOnHeartbeat));
-        //    await _httpClient.PostAsync(botOptions.Value.NotificationConfig.WebhookUrl,
-        //        new StringContent(@$"Time: `{@event.EventTime}`, Bot `{bot.BotUin}` offline, msg: {@event.Message.Replace(".", @"\.")}\."));
+        if (botOptions.Value.NotificationConfig.NotifyWebhookOnHeartbeat)
+        {
+            //    logger.LogWarning("{option} set true, send HTTP POST to webhook.",
+            //        nameof(_botOptions.Value.NotificationConfig.NotifyWebhookOnHeartbeat));
+            //    await _httpClient.PostAsync(botOptions.Value.NotificationConfig.WebhookUrl,
+            //        new StringContent(@$"Time: `{@event.EventTime}`, Bot `{bot.BotUin}` offline, msg: {@event.Message.Replace(".", @"\.")}\."));
+        }
 
         appLifetime.StopApplication();
     }
@@ -176,7 +175,6 @@ internal class LagrangeHost(
             scope?.Dispose();
         }
     }
-
 
     #endregion
 

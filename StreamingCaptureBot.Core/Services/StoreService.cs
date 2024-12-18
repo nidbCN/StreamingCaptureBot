@@ -8,7 +8,7 @@ namespace StreamingCaptureBot.Core.Services;
 public class StoreService(ILogger<StoreService> logger, IOptions<LagrangeImplOption> implOptions) : IDisposable
 {
     private readonly IsolatedStorageFile _storageFile = IsolatedStorageFile.GetStore(
-        IsolatedStorageScope.User | IsolatedStorageScope.Application, null, null));
+        IsolatedStorageScope.User | IsolatedStorageScope.Application, null, null);
     private readonly Random _generator = new();
 
     private async Task SaveAsJson<T>(string filename, T content) where T : new()
@@ -83,8 +83,9 @@ public class StoreService(ILogger<StoreService> logger, IOptions<LagrangeImplOpt
 
     private BotDeviceInfo GenerateInfo()
     {
-        var macAddress = new byte[6];
-        _generator.NextBytes(macAddress);
+        var macAddress = new byte[] { 0xf2, 0x1d, 0x00, 0x00, 0x00, 0x00 };
+
+        _generator.NextBytes(macAddress.AsSpan(2, 4));
 
         return new()
         {
