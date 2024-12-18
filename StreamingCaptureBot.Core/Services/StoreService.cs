@@ -42,14 +42,14 @@ public class StoreService(ILogger<StoreService> logger, IOptions<LagrangeImplOpt
     {
         if (!_storageFile.FileExists(filename))
         {
-            logger.LogWarning("File {name} not exists, return new.", filename);
+            logger.LogWarning("File {name} not exists, return default.", filename);
             return default;
         }
 
         try
         {
             await using var stream = _storageFile.OpenFile(filename, FileMode.Open, FileAccess.Read);
-            return await JsonSerializer.DeserializeAsync<T>(stream) ?? new();
+            return await JsonSerializer.DeserializeAsync<T>(stream) ?? default;
         }
         catch (Exception e)
         {

@@ -2,7 +2,7 @@
 using StreamingCaptureBot.Core.Bots.LagrangeBot.Extensions;
 using StreamingCaptureBot.Core.Utils;
 
-namespace StreamingCaptureBot.Core.FfMpeg.Net.Codecs;
+namespace StreamingCaptureBot.Core.FfMpeg.Codecs;
 
 public class FfmpegLibWebpEncoder : CodecBase
 {

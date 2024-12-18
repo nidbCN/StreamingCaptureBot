@@ -92,26 +92,25 @@ public sealed class CaptureService : IDisposable
         var openOptions = _openOptions;
 
         // 打开流
-        if (ffmpeg.avformat_open_input(&formatCtx, url, null, &openOptions) == 0)
-        {
-            _streamIsOpen = true;
-            _inputFormatCtx = formatCtx;
-        }
+        if (ffmpeg.avformat_open_input(&formatCtx, url, null, &openOptions) != 0)
+            return;
+        _streamIsOpen = true;
+        _inputFormatCtx = formatCtx;
     }
 
     private unsafe void CloseInput()
     {
         var formatCtx = _inputFormatCtx;
 
-        if (_streamIsOpen)
-        {
-            _logger.LogDebug("Close Input.");
+        if (!_streamIsOpen)
+            return;
 
-            ffmpeg.avformat_close_input(&formatCtx);
-            ffmpeg.avformat_free_context(formatCtx);
+        _logger.LogDebug("Close Input.");
 
-            _streamIsOpen = false;
-        }
+        ffmpeg.avformat_close_input(&formatCtx);
+        ffmpeg.avformat_free_context(formatCtx);
+
+        _streamIsOpen = false;
     }
 
     public void Dispose()
@@ -165,16 +164,13 @@ public sealed class CaptureService : IDisposable
                     continue;
                 }
 
-                unsafe
-                {
-                    _logger.LogInformation(
-                        "Received packet from stream[{index}] with size:{size}, pts(display):{pts:c}, dts(decode):{dts:c}.",
-                        _packet.StreamIndex,
-                        string.Format(_formatter, "{0}", _packet.Size),
-                        _packet.GetPresentationTimeSpan(_decoder.Context.TimeBase),
-                        _packet.GetDecodingTimeSpan(_decoder.Context.TimeBase)
-                    );
-                }
+                _logger.LogInformation(
+                    "Received packet from stream[{index}] with size:{size}, pts(display):{pts:c}, dts(decode):{dts:c}.",
+                    _packet.StreamIndex,
+                    string.Format(_formatter, "{0}", _packet.Size),
+                    _packet.GetPresentationTimeSpan(_decoder.Context.TimeBase),
+                    _packet.GetDecodingTimeSpan(_decoder.Context.TimeBase)
+                );
 
                 // drop packet without key frame
                 unsafe
@@ -327,11 +323,10 @@ public sealed class CaptureService : IDisposable
                 OpenInput();
 
                 DecodeNextFrameUnsafe();
-                var decodedFrame = _frame;
 
-                using (_logger.BeginScope(decodedFrame.ToString()))
+                using (_logger.BeginScope(_frame.ToString()))
                 {
-                    var queue = _encoder.Encode(decodedFrame);
+                    var queue = _encoder.Encode(_frame);
 
                     if (queue.Count > 1)
                     {

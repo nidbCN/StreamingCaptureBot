@@ -113,8 +113,8 @@ public abstract class DecoderBase(ILogger logger, DecoderContext ctx) : IDisposa
                     // * https://ffmpeg.org/doxygen/6.1/group__lavc__decoding.html#ga11e6542c4e66d3028668788a1a74217c
                     // > output is not available in this state - user must try to send new input
                     // 理论上不会出现 EAGAIN
-                    message =
-                        "output is not available in this state - user must try to send new input";
+                    // message =
+                    //    "output is not available in this state - user must try to send new input";
 
                     //if (_streamOption.KeyFrameOnly)
                     //{
