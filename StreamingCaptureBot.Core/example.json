@@ -17,8 +17,9 @@
   "StreamOption": {
     "FfMpegLibrariesPath": "/usr/lib/x86_64-linux-gnu/",
     "Url": "https://example.com/live.flv",
-    "ConnectTimeout": 1200,
-    "CodecTimeout": 6000,
+    "ConnectTimeout": 0,
+    "CacheTimeout": "00:00:15",
+    "CodecTimeout": "00:00:12",
     "CodecThreads": -1,
     "LogLevel": "WARNING"
   },
@@ -31,7 +32,7 @@
       "NotifyWebhookOnException": false,
       "NotifyAdminOnHeartbeat": false,
       "NotifyWebhookOnHeartbeat": false,
-      "HeartbeatIntervalHour": 6,
+      "HeartbeatInterval": "01:00:00",
       "WebhookUrl": "https://notification.example/api/notifications?id=12345678",
       "WebhookHeaders": [
         {
