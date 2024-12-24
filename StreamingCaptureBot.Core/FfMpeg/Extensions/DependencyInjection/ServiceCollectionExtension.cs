@@ -1,17 +1,17 @@
-﻿using FFmpeg.AutoGen.Abstractions;
+﻿using System.Runtime.InteropServices;
+using System.Text;
+using FFmpeg.AutoGen.Abstractions;
 using FFmpeg.AutoGen.Bindings.DynamicallyLinked;
 using FFmpeg.AutoGen.Bindings.DynamicallyLoaded;
-using Microsoft.Extensions.Options;
-using StreamingCaptureBot.Core.Configs;
-using System.Runtime.InteropServices;
-using System.Text;
 using FfMpeg.AutoGen.Wrapper.DataStructs;
 using FfMpeg.AutoGen.Wrapper.Extensions;
 using FfMpeg.AutoGen.Wrapper.Utils;
-using StreamingCaptureBot.Core.FfMpeg.Codecs;
-using StreamingCaptureBot.Core.Utils;
+using Microsoft.Extensions.Options;
+using StreamingCaptureBot.Hosting.Configs;
+using StreamingCaptureBot.Hosting.FfMpeg.Codecs;
+using StreamingCaptureBot.Hosting.Utils;
 
-namespace StreamingCaptureBot.Core.FfMpeg.Extensions.DependencyInjection;
+namespace StreamingCaptureBot.Hosting.FfMpeg.Extensions.DependencyInjection;
 
 public static class ServiceCollectionExtension
 {

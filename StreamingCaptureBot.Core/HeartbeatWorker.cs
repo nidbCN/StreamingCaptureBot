@@ -2,10 +2,10 @@ using Lagrange.Core;
 using Lagrange.Core.Common.Interface.Api;
 using Lagrange.Core.Message;
 using Microsoft.Extensions.Options;
-using StreamingCaptureBot.Core.Configs;
-using StreamingCaptureBot.Core.Utils;
+using StreamingCaptureBot.Abstraction.Options;
+using StreamingCaptureBot.Hosting.Utils;
 
-namespace StreamingCaptureBot.Core;
+namespace StreamingCaptureBot.Hosting;
 
 public class HeartBeatWorker(ILogger<HeartBeatWorker> logger,
     IOptions<BotOption> botOptions,
@@ -49,7 +49,7 @@ public class HeartBeatWorker(ILogger<HeartBeatWorker> logger,
     {
         var url = botOptions.Value.NotificationConfig.WebhookUrl!;
 
-        var headers = botOptions.Value.NotificationConfig.WebhookHeaders;
+        // var headers = botOptions.Value.NotificationConfig.WebhookHeaders;
         var resp = await _httpClient
             .PostAsync(url, new StringContent(message), stoppingToken);
         if (!resp.IsSuccessStatusCode)

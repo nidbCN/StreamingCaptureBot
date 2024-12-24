@@ -1,9 +1,10 @@
 ﻿using Lagrange.Core.Common.Interface;
-using Microsoft.Extensions.Options;
-using StreamingCaptureBot.Core.Configs;
-using StreamingCaptureBot.Core.Services;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using StreamingCaptureBot.Impl.Lagrange.Options;
+using StreamingCaptureBot.Impl.Lagrange.Services;
 
-namespace StreamingCaptureBot.Core.Bots.LagrangeBot.Extensions.DependencyInjection;
+namespace StreamingCaptureBot.Impl.Lagrange.Extensions.DependencyInjection;
 
 public static class ServiceCollectionExtension
 {

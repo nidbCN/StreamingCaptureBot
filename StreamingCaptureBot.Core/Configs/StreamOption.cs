@@ -1,4 +1,4 @@
-﻿namespace StreamingCaptureBot.Core.Configs;
+﻿namespace StreamingCaptureBot.Hosting.Configs;
 
 public record StreamOption
 {

@@ -1,8 +1,8 @@
 ﻿using FFmpeg.AutoGen.Abstractions;
-using StreamingCaptureBot.Core.Bots.LagrangeBot.Extensions;
-using StreamingCaptureBot.Core.Utils;
+using FfMpeg.AutoGen.Wrapper.Extensions;
+using StreamingCaptureBot.Hosting.Utils;
 
-namespace StreamingCaptureBot.Core.FfMpeg.Codecs;
+namespace StreamingCaptureBot.Hosting.FfMpeg.Codecs;
 
 public class FfmpegBmpEncoder : CodecBase
 {

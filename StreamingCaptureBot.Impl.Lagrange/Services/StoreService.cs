@@ -1,10 +1,12 @@
 ﻿using System.IO.IsolatedStorage;
 using System.Text.Json;
 using Lagrange.Core.Common;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using StreamingCaptureBot.Core.Configs;
+using StreamingCaptureBot.Impl.Lagrange.Options;
 
-namespace StreamingCaptureBot.Core.Services;
+namespace StreamingCaptureBot.Impl.Lagrange.Services;
+
 public class StoreService(ILogger<StoreService> logger, IOptions<LagrangeImplOption> implOptions) : IDisposable
 {
     private readonly IsolatedStorageFile _storageFile = IsolatedStorageFile.GetStore(

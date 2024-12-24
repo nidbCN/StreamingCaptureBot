@@ -1,4 +1,4 @@
-﻿namespace StreamingCaptureBot.Core.Bot.Routing;
+﻿namespace StreamingCaptureBot.Hosting.Bot.Routing;
 internal class BindCaptchaAttribute
 {
 }

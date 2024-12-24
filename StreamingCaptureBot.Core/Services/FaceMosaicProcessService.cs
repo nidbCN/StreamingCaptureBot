@@ -1,11 +1,11 @@
 ﻿using System.Text.Json;
 using FFmpeg.AutoGen.Abstractions;
 using FfMpeg.AutoGen.Wrapper.DataStructs;
+using FfMpeg.AutoGen.Wrapper.Extensions;
 using Microsoft.Extensions.Options;
-using StreamingCaptureBot.Core.Bots.LagrangeBot.Extensions;
-using StreamingCaptureBot.Core.Configs;
+using StreamingCaptureBot.Hosting.Configs;
 
-namespace StreamingCaptureBot.Core.Services;
+namespace StreamingCaptureBot.Hosting.Services;
 
 public class FaceMosaicProcessService
     : IImageProcessService

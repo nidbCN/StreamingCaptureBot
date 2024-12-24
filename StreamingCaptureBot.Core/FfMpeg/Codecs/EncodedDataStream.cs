@@ -1,6 +1,6 @@
 ﻿using System.Buffers;
 
-namespace StreamingCaptureBot.Core.FfMpeg.Codecs;
+namespace StreamingCaptureBot.Hosting.FfMpeg.Codecs;
 
 public class EncodedDataStream : Stream
 {

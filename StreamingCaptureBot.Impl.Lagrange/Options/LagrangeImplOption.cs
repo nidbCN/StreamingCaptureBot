@@ -1,6 +1,7 @@
 ﻿using Lagrange.Core.Common;
 
-namespace StreamingCaptureBot.Core.Configs;
+namespace StreamingCaptureBot.Impl.Lagrange.Options;
+
 public record LagrangeImplOption
 {
     public string KeyStoreFile { get; set; } = "keystore.json";

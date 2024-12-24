@@ -1,12 +1,12 @@
-﻿using StreamingCaptureBot.Core.Controllers;
+﻿using StreamingCaptureBot.Hosting.Controllers;
 using StreamingCaptureBot.Impl.Tencent;
 
-namespace StreamingCaptureBot.Core.Bots.TencentBot;
+namespace StreamingCaptureBot.Hosting.Bots.TencentBot;
 
 public class TencentHost(
     ILogger<TencentHost> logger,
     TencentWebhookWorker worker,
-    BotController controller) : IHostedLifecycleService
+    TempBotController controller) : IHostedLifecycleService
 {
 
     public Task StartAsync(CancellationToken cancellationToken)

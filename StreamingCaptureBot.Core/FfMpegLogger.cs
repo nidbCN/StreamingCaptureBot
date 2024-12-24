@@ -1,7 +1,7 @@
 ﻿using FFmpeg.AutoGen.Abstractions;
 using Microsoft.Extensions.Options;
 
-namespace StreamingCaptureBot.Core;
+namespace StreamingCaptureBot.Hosting;
 
 public class FfMpegLogger(
     ILogger<FfMpegLogger> logger,
@@ -30,7 +30,7 @@ public class FfMpegLogger(
         unsafe
         {
             _logCallback = FfMpegLogInvoke;
-            ffmpeg.av_log_set_level(ffmpeg.AV_LOG_TRACE);
+            ffmpeg.av_log_set_level(level);
             ffmpeg.av_log_set_callback(_logCallback);
         }
     }

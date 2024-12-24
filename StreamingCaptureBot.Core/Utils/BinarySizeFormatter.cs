@@ -1,6 +1,6 @@
 ﻿using System.Globalization;
 
-namespace StreamingCaptureBot.Core.Utils;
+namespace StreamingCaptureBot.Hosting.Utils;
 
 public sealed class BinarySizeFormatter : IFormatProvider, ICustomFormatter
 {
@@ -41,13 +41,14 @@ public sealed class BinarySizeFormatter : IFormatProvider, ICustomFormatter
             _ => $"{size / (double)_1g:F2}GB"
         };
 
-    private string HandleOtherFormats(string? format, object? arg)
+    private static string HandleOtherFormats(string? format, object? arg)
     {
         if (arg is IFormattable formattable)
             return formattable.ToString(format, CultureInfo.CurrentCulture);
-        else if (arg is not null)
-            return arg?.ToString() ?? string.Empty;
-        else
-            return string.Empty;
+        
+        if (arg is not null)
+            return arg.ToString() ?? string.Empty;
+
+        return string.Empty;
     }
 }

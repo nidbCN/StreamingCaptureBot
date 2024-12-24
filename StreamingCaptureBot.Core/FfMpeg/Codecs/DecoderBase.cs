@@ -1,8 +1,8 @@
 ﻿using FFmpeg.AutoGen.Abstractions;
 using FfMpeg.AutoGen.Wrapper.DataStructs;
-using StreamingCaptureBot.Core.Bots.LagrangeBot.Extensions;
+using FfMpeg.AutoGen.Wrapper.Extensions;
 
-namespace StreamingCaptureBot.Core.FfMpeg.Codecs;
+namespace StreamingCaptureBot.Hosting.FfMpeg.Codecs;
 
 public abstract class DecoderBase(ILogger logger, DecoderContext ctx) : IDisposable
 {
@@ -79,7 +79,7 @@ public abstract class DecoderBase(ILogger logger, DecoderContext ctx) : IDisposa
             }
             else
             {
-                var error = new ApplicationException(FfMpegExtension.av_strerror(sendResult));
+                var error = new ApplicationException(FfMpegExtension.ErrorCodeToString(sendResult));
 
                 // 无法处理的发送失败
                 logger.LogError(error, "Send packet to decoder failed.\n");
@@ -91,7 +91,7 @@ public abstract class DecoderBase(ILogger logger, DecoderContext ctx) : IDisposa
             {
                 // 错误处理
                 ApplicationException error;
-                var message = FfMpegExtension.av_strerror(decodeResult);
+                var message = FfMpegExtension.ErrorCodeToString(decodeResult);
 
                 if (decodeResult == ffmpeg.AVERROR_EOF)
                 {

@@ -1,11 +1,12 @@
-﻿using StreamingCaptureBot.Core.Services;
+﻿using StreamingCaptureBot.Abstraction.Controllers;
+using StreamingCaptureBot.Hosting.Services;
 
-namespace StreamingCaptureBot.Core.Controllers;
+namespace StreamingCaptureBot.Hosting.Controllers;
 
-public class BotController(
-    ILogger<BotController> logger,
+public class TempBotController(
+    ILogger<TempBotController> logger,
     CaptureService captureService
-    )
+    ) : ITempBotController
 {
     public async Task<ActionResult> HandleCaptureImageCommand(BotRequest request)
     {
@@ -38,18 +39,5 @@ public class BotController(
         }
 
         return response;
-    }
-
-    public record ActionResult
-    {
-        public string? Message { get; set; }
-        public byte[]? Image { get; set; }
-    }
-
-    public record BotRequest
-    {
-        public uint? GroupUin { get; set; }
-        public uint FriendUin { get; set; }
-        public string? MessageText { get; set; }
     }
 }

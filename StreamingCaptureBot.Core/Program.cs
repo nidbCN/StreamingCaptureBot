@@ -1,10 +1,12 @@
-using StreamingCaptureBot.Core;
-using StreamingCaptureBot.Core.Bots.LagrangeBot.Extensions.DependencyInjection;
-using StreamingCaptureBot.Core.Configs;
-using StreamingCaptureBot.Core.Controllers;
-using StreamingCaptureBot.Core.FfMpeg.Extensions.DependencyInjection;
-using StreamingCaptureBot.Core.Services;
-using StreamingCaptureBot.Core.Utils;
+using StreamingCaptureBot.Abstraction.Controllers;
+using StreamingCaptureBot.Abstraction.Options;
+using StreamingCaptureBot.Hosting;
+using StreamingCaptureBot.Hosting.Configs;
+using StreamingCaptureBot.Hosting.Controllers;
+using StreamingCaptureBot.Hosting.FfMpeg.Extensions.DependencyInjection;
+using StreamingCaptureBot.Hosting.Services;
+using StreamingCaptureBot.Hosting.Utils;
+using StreamingCaptureBot.Impl.Lagrange.Extensions.DependencyInjection;
 using StreamingCaptureBot.Impl.Tencent.Extensions.DependencyInjection;
 
 var builder = Host.CreateApplicationBuilder(args);
@@ -34,7 +36,7 @@ builder.Services.AddLogging();
 builder.Services.AddTransient<BinarySizeFormatter>();
 
 builder.Services.AddSingleton<CaptureService>();
-builder.Services.AddSingleton<BotController>();
+builder.Services.AddSingleton<ITempBotController, TempBotController>();
 
 builder.Services.AddHostedService<HeartBeatWorker>();
 

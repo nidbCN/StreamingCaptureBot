@@ -1,12 +1,12 @@
 ﻿using FFmpeg.AutoGen.Abstractions;
 using FfMpeg.AutoGen.Wrapper.DataStructs;
+using FfMpeg.AutoGen.Wrapper.Extensions;
 using Microsoft.Extensions.Options;
-using StreamingCaptureBot.Core.Bots.LagrangeBot.Extensions;
-using StreamingCaptureBot.Core.Configs;
-using StreamingCaptureBot.Core.FfMpeg.Codecs;
-using StreamingCaptureBot.Core.Utils;
+using StreamingCaptureBot.Hosting.Configs;
+using StreamingCaptureBot.Hosting.FfMpeg.Codecs;
+using StreamingCaptureBot.Hosting.Utils;
 
-namespace StreamingCaptureBot.Core.Services;
+namespace StreamingCaptureBot.Hosting.Services;
 
 public sealed class CaptureService : IDisposable
 {
@@ -144,7 +144,7 @@ public sealed class CaptureService : IDisposable
                 // EOF
                 if (readResult == ffmpeg.AVERROR_EOF)
                 {
-                    var message = FfMpegExtension.av_strerror(readResult);
+                    var message = FfMpegExtension.ErrorCodeToString(readResult);
                     var error = new ApplicationException(message);
 
                     _logger.LogError(error, message);
@@ -286,7 +286,7 @@ public sealed class CaptureService : IDisposable
                     break;
 
                 if (result < 0)
-                    _logger.LogError("An error occured during drop frame. {msg}", FfMpegExtension.av_strerror(result));
+                    _logger.LogError("An error occured during drop frame. {msg}", FfMpegExtension.ErrorCodeToString(result));
 
                 _logger.LogDebug("Drop frame[{seq}] in decoder queue[{num}] in decoder buffer.", cnt, _decoder.Context.UnmanagedPointer->frame_num);
             }

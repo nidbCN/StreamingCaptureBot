@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.8.34408.163
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StreamingCaptureBot.Core", "StreamingCaptureBot.Core\StreamingCaptureBot.Core.csproj", "{3789A3DB-6ABB-4966-AC8F-821DA758EDED}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StreamingCaptureBot.Hosting", "StreamingCaptureBot.Core\StreamingCaptureBot.Hosting.csproj", "{3789A3DB-6ABB-4966-AC8F-821DA758EDED}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StreamingCaptureBot.Impl.Tencent", "StreamingCaptureBot.Impl\Tencent\StreamingCaptureBot.Impl.Tencent.csproj", "{D7BD41EE-DB70-4132-ACF1-8874EE5D84A0}"
 EndProject
@@ -19,6 +19,10 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StreamingCaptureBot.Utils", "StreamingCaptureBot.Utils\StreamingCaptureBot.Utils.csproj", "{4F3C21BD-3AA2-415A-8300-6D561F88DDBC}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FfMpeg.AutoGen.Wrapper", "FfMpegLib.Net\FfMpeg.AutoGen.Wrapper.csproj", "{42CB1151-209E-4263-A81C-CDB32AC356F3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StreamingCaptureBot.Impl.Lagrange", "StreamingCaptureBot.Impl.Lagrange\StreamingCaptureBot.Impl.Lagrange.csproj", "{8DD3254C-EDC1-4701-B130-10CDA1664C37}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StreamingCaptureBot.Abstraction", "StreamingCaptureBot.Abstraction\StreamingCaptureBot.Abstraction.csproj", "{4D66C262-35B1-4719-BDD6-5F0F090BCB2A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -46,12 +50,21 @@ Global
 		{42CB1151-209E-4263-A81C-CDB32AC356F3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{42CB1151-209E-4263-A81C-CDB32AC356F3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{42CB1151-209E-4263-A81C-CDB32AC356F3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8DD3254C-EDC1-4701-B130-10CDA1664C37}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8DD3254C-EDC1-4701-B130-10CDA1664C37}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8DD3254C-EDC1-4701-B130-10CDA1664C37}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8DD3254C-EDC1-4701-B130-10CDA1664C37}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4D66C262-35B1-4719-BDD6-5F0F090BCB2A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4D66C262-35B1-4719-BDD6-5F0F090BCB2A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4D66C262-35B1-4719-BDD6-5F0F090BCB2A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4D66C262-35B1-4719-BDD6-5F0F090BCB2A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{D7BD41EE-DB70-4132-ACF1-8874EE5D84A0} = {6CCA3E90-0A1C-4410-BD3A-457339FE89A4}
+		{8DD3254C-EDC1-4701-B130-10CDA1664C37} = {6CCA3E90-0A1C-4410-BD3A-457339FE89A4}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {0BF666F4-2E29-4001-8A48-96FD35369224}

@@ -1,10 +1,10 @@
 ﻿using System.Runtime.InteropServices;
 using FFmpeg.AutoGen.Abstractions;
 using FfMpeg.AutoGen.Wrapper.DataStructs;
-using StreamingCaptureBot.Core.Bots.LagrangeBot.Extensions;
-using StreamingCaptureBot.Core.Utils;
+using FfMpeg.AutoGen.Wrapper.Extensions;
+using StreamingCaptureBot.Hosting.Utils;
 
-namespace StreamingCaptureBot.Core.FfMpeg.Codecs;
+namespace StreamingCaptureBot.Hosting.FfMpeg.Codecs;
 
 public class CodecBase(ILogger logger, BinarySizeFormatter binarySizeFormat) : IDisposable
 {
@@ -36,7 +36,7 @@ public class CodecBase(ILogger logger, BinarySizeFormatter binarySizeFormat) : I
             if (ret < 0)
             {
                 // handle send exceptions.
-                var exception = new ApplicationException(FfMpegExtension.av_strerror(ret));
+                var exception = new ApplicationException(FfMpegExtension.ErrorCodeToString(ret));
                 string? message = null;
 
                 if (ret == ffmpeg.AVERROR(ffmpeg.EAGAIN))
@@ -94,7 +94,7 @@ public class CodecBase(ILogger logger, BinarySizeFormatter binarySizeFormat) : I
                 // references:
                 // * https://ffmpeg.org/doxygen/6.1/group__lavc__decoding.html#ga5b8eff59cf259747cf0b31563e38ded6
                 var exception = new ApplicationException(
-                    FfMpegExtension.av_strerror(ret));
+                    FfMpegExtension.ErrorCodeToString(ret));
                 var message = "Uncaught error occured during encoding.\n";
 
                 if (ret == ffmpeg.AVERROR_EOF)

@@ -1,4 +1,4 @@
-﻿namespace StreamingCaptureBot.Core.Configs;
+﻿namespace StreamingCaptureBot.Abstraction.Options;
 
 public record BotOption
 {

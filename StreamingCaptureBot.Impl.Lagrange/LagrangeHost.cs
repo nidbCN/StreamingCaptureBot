@@ -7,23 +7,27 @@ using Lagrange.Core.Common.Interface.Api;
 using Lagrange.Core.Event.EventArg;
 using Lagrange.Core.Message;
 using Lagrange.Core.Message.Entity;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using StreamingCaptureBot.Core.Configs;
-using StreamingCaptureBot.Core.Controllers;
-using StreamingCaptureBot.Core.Services;
+using StreamingCaptureBot.Abstraction.Controllers;
+using StreamingCaptureBot.Abstraction.Options;
+using StreamingCaptureBot.Impl.Lagrange.Options;
+using StreamingCaptureBot.Impl.Lagrange.Services;
 using StreamingCaptureBot.Utils.Extensions;
 using BotLogLevel = Lagrange.Core.Event.EventArg.LogLevel;
 using LogLevel = Microsoft.Extensions.Logging.LogLevel;
 
-namespace StreamingCaptureBot.Core.Bots.LagrangeBot;
-internal class LagrangeHost(
+namespace StreamingCaptureBot.Impl.Lagrange;
+
+public class LagrangeHost(
     ILogger<LagrangeHost> logger,
     IHostApplicationLifetime appLifetime,
     IOptions<BotOption> botOptions,
     IOptions<LagrangeImplOption> implOptions,
     BotContext botCtx,
     StoreService storeService,
-    BotController controller)
+    ITempBotController controller)
     : IHostedLifecycleService
 {
     #region EventHandlers

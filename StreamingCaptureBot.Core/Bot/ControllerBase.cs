@@ -1,4 +1,4 @@
-﻿namespace StreamingCaptureBot.Core.Bot;
+﻿namespace StreamingCaptureBot.Hosting.Bot;
 internal class ControllerBase
 {
 }

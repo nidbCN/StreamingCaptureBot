@@ -1,6 +1,6 @@
 ﻿using FFmpeg.AutoGen.Abstractions;
 
-namespace StreamingCaptureBot.Core.Services;
+namespace StreamingCaptureBot.Hosting.Services;
 
 public interface IImageProcessService
 {
