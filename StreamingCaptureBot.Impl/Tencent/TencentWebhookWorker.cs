@@ -3,11 +3,11 @@ using System.Text.Json;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using StreamCaptureBot.Utils.Extensions;
 using StreamingCaptureBot.Impl.Tencent.Options;
 using StreamingCaptureBot.Impl.Tencent.Protocols;
 using StreamingCaptureBot.Impl.Tencent.Protocols.EventContents;
 using StreamingCaptureBot.Impl.Tencent.Utils.Sign;
+using StreamingCaptureBot.Utils.Extensions;
 
 namespace StreamingCaptureBot.Impl.Tencent;
 

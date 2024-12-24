@@ -2,7 +2,7 @@
 using System.Runtime.InteropServices;
 using FFmpeg.AutoGen.Bindings.DynamicallyLoaded;
 
-namespace FfMpegLib.Net.Utils;
+namespace FfMpeg.AutoGen.Wrapper.Utils;
 
 public static class LibraryUtil
 {
@@ -31,4 +31,6 @@ public static class LibraryUtil
         var styledName = $"{libraryName}.{extension}.{versionName}";
         return NativeLibrary.Load(styledName, assembly, searchPath);
     }
+
+
 }

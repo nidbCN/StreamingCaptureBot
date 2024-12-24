@@ -1,7 +1,7 @@
 ﻿using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
-namespace StreamCaptureBot.Utils;
+namespace StreamingCaptureBot.Utils;
 
 [StructLayout(LayoutKind.Explicit)]
 public struct ByteHex

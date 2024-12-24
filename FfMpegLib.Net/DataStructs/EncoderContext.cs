@@ -1,6 +1,6 @@
 ﻿using FFmpeg.AutoGen.Abstractions;
 
-namespace FfMpegLib.Net.DataStructs;
+namespace FfMpeg.AutoGen.Wrapper.DataStructs;
 
 public class EncoderContext : AvCodecContextWrapper
 {

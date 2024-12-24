@@ -1,6 +1,6 @@
 ﻿using System.Security.Cryptography;
 
-namespace StreamCaptureBot.Utils.Extensions;
+namespace StreamingCaptureBot.Utils.Extensions;
 public static class ByteExtension
 {
     public static string ToHex(this byte b, ByteHex.HexCasing casing = ByteHex.HexCasing.LowerCase)

@@ -1,6 +1,6 @@
 ﻿using System.Text.Json;
 using FFmpeg.AutoGen.Abstractions;
-using FfMpegLib.Net.DataStructs;
+using FfMpeg.AutoGen.Wrapper.DataStructs;
 using Microsoft.Extensions.Options;
 using StreamingCaptureBot.Core.Bots.LagrangeBot.Extensions;
 using StreamingCaptureBot.Core.Configs;

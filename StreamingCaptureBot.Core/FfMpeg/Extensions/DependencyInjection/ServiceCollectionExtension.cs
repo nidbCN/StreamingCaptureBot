@@ -5,9 +5,9 @@ using Microsoft.Extensions.Options;
 using StreamingCaptureBot.Core.Configs;
 using System.Runtime.InteropServices;
 using System.Text;
-using FfMpegLib.Net.DataStructs;
-using FfMpegLib.Net.Extensions;
-using FfMpegLib.Net.Utils;
+using FfMpeg.AutoGen.Wrapper.DataStructs;
+using FfMpeg.AutoGen.Wrapper.Extensions;
+using FfMpeg.AutoGen.Wrapper.Utils;
 using StreamingCaptureBot.Core.FfMpeg.Codecs;
 using StreamingCaptureBot.Core.Utils;
 

@@ -1,7 +1,7 @@
 ﻿using FFmpeg.AutoGen.Abstractions;
-using FfMpegLib.Net.Utils;
+using FfMpeg.AutoGen.Wrapper.Utils;
 
-namespace FfMpegLib.Net.DataStructs;
+namespace FfMpeg.AutoGen.Wrapper.DataStructs;
 
 public class AvFrameWrapper : WrapperBase<AVFrame>
 {

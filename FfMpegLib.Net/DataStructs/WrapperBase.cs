@@ -1,4 +1,4 @@
-﻿namespace FfMpegLib.Net.DataStructs;
+﻿namespace FfMpeg.AutoGen.Wrapper.DataStructs;
 
 public abstract class WrapperBase<T> : IDisposable where T : unmanaged
 {

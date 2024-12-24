@@ -8,10 +8,10 @@ using Lagrange.Core.Event.EventArg;
 using Lagrange.Core.Message;
 using Lagrange.Core.Message.Entity;
 using Microsoft.Extensions.Options;
-using StreamCaptureBot.Utils.Extensions;
 using StreamingCaptureBot.Core.Configs;
 using StreamingCaptureBot.Core.Controllers;
 using StreamingCaptureBot.Core.Services;
+using StreamingCaptureBot.Utils.Extensions;
 using BotLogLevel = Lagrange.Core.Event.EventArg.LogLevel;
 using LogLevel = Microsoft.Extensions.Logging.LogLevel;
 

@@ -1,7 +1,7 @@
 ﻿using System.Runtime.InteropServices;
 using FFmpeg.AutoGen.Abstractions;
 
-namespace FfMpegLib.Net.Extensions;
+namespace FfMpeg.AutoGen.Wrapper.Extensions;
 
 public static class FfMpegExtension
 {

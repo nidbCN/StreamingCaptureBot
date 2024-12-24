@@ -1,6 +1,6 @@
 ﻿using System.Runtime.InteropServices;
 
-namespace FfMpegLib.Net.DataStructs;
+namespace FfMpeg.AutoGen.Wrapper.DataStructs;
 
 [StructLayout(LayoutKind.Explicit)]
 public struct VersionInfo(uint version)
