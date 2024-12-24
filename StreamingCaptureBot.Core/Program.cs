@@ -23,8 +23,6 @@ builder.Services.Configure<BotOption>(botOption);
 switch ((botOption.Get<BotOption>() ?? new()).BotImplement)
 {
     case BotOption.Implement.Lagrange:
-        builder.Services.Configure<LagrangeImplOption>(
-            builder.Configuration.GetSection(nameof(LagrangeImplOption)));
         builder.Services.AddLagrangeBots();
         break;
     case BotOption.Implement.Tencent:

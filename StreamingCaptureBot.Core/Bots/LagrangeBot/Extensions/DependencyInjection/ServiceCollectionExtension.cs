@@ -7,21 +7,21 @@ namespace StreamingCaptureBot.Core.Bots.LagrangeBot.Extensions.DependencyInjecti
 
 public static class ServiceCollectionExtension
 {
-    public static IServiceCollection AddLagrangeBots(this IServiceCollection services)
-    {
-        services.AddSingleton<StoreService>();
-        services.AddSingleton(provider =>
-        {
-            var storeService = provider.GetRequiredService<StoreService>();
-            var implOption = provider.GetRequiredService<IOptions<LagrangeImplOption>>();
+    public static IServiceCollection AddLagrangeBots(this IServiceCollection s)
+        => s.AddSingleton<StoreService>()
+            .AddSingleton(provider =>
+            {
+                var configSection = provider.GetRequiredService<IConfiguration>()
+                    .GetSection(nameof(LagrangeImplOption));
+                s.Configure<LagrangeImplOption>(configSection);
 
-            var deviceInfo = storeService.ReadDeviceInfo();
-            var keyStore = storeService.ReadKeyStore();
+                var config = configSection.Get<LagrangeImplOption>();
 
-            return BotFactory.Create(implOption.Value.LagrangeConfig, deviceInfo, keyStore);
-        });
-        services.AddHostedService<LagrangeHost>();
+                var storeService = provider.GetRequiredService<StoreService>();
+                var deviceInfo = storeService.ReadDeviceInfo();
+                var keyStore = storeService.ReadKeyStore();
 
-        return services;
-    }
+                return BotFactory.Create(config?.LagrangeConfig ?? new(), deviceInfo, keyStore);
+            })
+            .AddHostedService<LagrangeHost>();
 }
