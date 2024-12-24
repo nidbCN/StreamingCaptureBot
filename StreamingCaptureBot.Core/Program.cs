@@ -9,11 +9,6 @@ using StreamingCaptureBot.Impl.Tencent.Extensions.DependencyInjection;
 
 var builder = Host.CreateApplicationBuilder(args);
 
-builder.Services.AddWindowsService(s =>
-{
-    s.ServiceName = "Live stream capture bot";
-});
-
 var botOption = builder.Configuration
     .GetSection(nameof(BotOption));
 
