@@ -13,10 +13,16 @@ public class StoreService(ILogger<StoreService> logger, IOptions<LagrangeImplOpt
         IsolatedStorageScope.User | IsolatedStorageScope.Application, null, null);
     private readonly Random _generator = new();
 
-    private async Task SaveAsJson<T>(string filename, T content) where T : new()
+    private void SaveAsJson<T>(string filename, T content) where T : new()
     {
-        await using var keyFileStream = _storageFile.OpenFile(filename, FileMode.Create, FileAccess.Write);
-        await JsonSerializer.SerializeAsync(keyFileStream, content);
+        using var fileStream = _storageFile.OpenFile(filename, FileMode.Create, FileAccess.Write);
+        JsonSerializer.Serialize(fileStream, content);
+    }
+
+    private async Task SaveAsJsonAsync<T>(string filename, T content) where T : new()
+    {
+        await using var fileStream = _storageFile.OpenFile(filename, FileMode.Create, FileAccess.Write);
+        await JsonSerializer.SerializeAsync(fileStream, content);
     }
 
     private T? ReadJsonOrDelete<T>(string filename) where T : new()
@@ -77,11 +83,17 @@ public class StoreService(ILogger<StoreService> logger, IOptions<LagrangeImplOpt
         => await ReadJsonOrDeleteAsync<BotDeviceInfo>(implOptions.Value.DeviceInfoFile)
            ?? GenerateInfo();
 
+    public void SaveKeyStore(BotKeystore keyStore)
+        => SaveAsJson(implOptions.Value.KeyStoreFile, keyStore);
+
     public async Task SaveKeyStoreAsync(BotKeystore keyStore)
-        => await SaveAsJson(implOptions.Value.KeyStoreFile, keyStore);
+        => await SaveAsJsonAsync(implOptions.Value.KeyStoreFile, keyStore);
+
+    public void SaveDeviceInfo(BotDeviceInfo deviceInfo)
+        => SaveAsJson(implOptions.Value.DeviceInfoFile, deviceInfo);
 
     public async Task SaveDeviceInfoAsync(BotDeviceInfo deviceInfo)
-        => await SaveAsJson(implOptions.Value.DeviceInfoFile, deviceInfo);
+        => await SaveAsJsonAsync(implOptions.Value.DeviceInfoFile, deviceInfo);
 
     private BotDeviceInfo GenerateInfo()
     {

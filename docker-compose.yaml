@@ -15,4 +15,4 @@ services:
 
 configs:
   appsettings:
-    file: ./StreamingCaptureBot.Core/appsettings.json
+    file: ./StreamingCaptureBot.Hosting/appsettings.json

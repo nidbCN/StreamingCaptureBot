@@ -1,6 +1,6 @@
 {
   "profiles": {
-    "StreamingCaptureBot.Core": {
+    "StreamingCaptureBot.Hosting": {
       "commandName": "Project",
       "environmentVariables": {
         "DOTNET_ENVIRONMENT": "Development"

@@ -32,7 +32,7 @@ public class LagrangeHost(
 {
     #region EventHandlers
 
-    private void ProcessLog(BotContext bot, BotLogEvent @event)
+    private void ProcessLog(BotContext thisBot, BotLogEvent @event)
     {
         using (logger.BeginScope($"{nameof(BotLogEvent)}"))
         {
@@ -49,9 +49,9 @@ public class LagrangeHost(
         }
     }
 
-    private async Task ProcessBotOnline(BotContext thisBot, BotOnlineEvent _)
+    private void ProcessBotOnline(BotContext thisBot, BotOnlineEvent _)
     {
-        logger.LogInformation("Login Success! Bot `{name}@{id}` online.", thisBot.BotName, thisBot.BotUin);
+        logger.LogInformation("Bot `{name}@{id}` online.", thisBot.BotName, thisBot.BotUin);
 
         // save device info and keystore
         try
@@ -70,8 +70,8 @@ public class LagrangeHost(
                 }
             }
 
-            await Task.WhenAll(storeService.SaveKeyStoreAsync(keyStore),
-                storeService.SaveDeviceInfoAsync(thisBot.UpdateDeviceInfo()));
+            storeService.SaveDeviceInfo(thisBot.UpdateDeviceInfo());
+            storeService.SaveKeyStore(thisBot.UpdateKeystore());
         }
         catch (Exception e)
         {
@@ -316,8 +316,7 @@ public class LagrangeHost(
     Task IHostedService.StartAsync(CancellationToken cancellationToken)
     {
         botCtx.Invoker.OnBotLogEvent += ProcessLog;
-        botCtx.Invoker.OnBotOnlineEvent +=
-            async (bot, @event) => await ProcessBotOnline(bot, @event);
+        botCtx.Invoker.OnBotOnlineEvent += ProcessBotOnline;
         botCtx.Invoker.OnBotOfflineEvent += ProcessBotOffline;
         botCtx.Invoker.OnGroupMessageReceived +=
             async (bot, @event) => await ProcessMessage(@event.Chain, bot);
