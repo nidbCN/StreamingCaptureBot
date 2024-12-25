@@ -8,6 +8,8 @@ public record BotOption
         Tencent
     }
 
+    public bool ShutdownAfterOffline { get; set; } = false;
+
     public IList<uint>? AllowedGroups { get; set; } = null;
     public IList<uint>? AllowedFriends { get; set; } = null;
     public IList<uint> AdminAccounts { get; set; } = [];

@@ -79,7 +79,7 @@ public class LagrangeHost(
         }
     }
 
-    private void ProcessBotOffline(BotContext bot, BotOfflineEvent _)
+    private void ProcessBotOffline(BotContext bot, BotOfflineEvent @event)
     {
         logger.LogError("Bot `{name}@{id}` offline.", bot.BotName, bot.BotUin);
 
@@ -91,7 +91,10 @@ public class LagrangeHost(
             //        new StringContent(@$"Time: `{@event.EventTime}`, Bot `{bot.BotUin}` offline, msg: {@event.Message.Replace(".", @"\.")}\."));
         }
 
-        appLifetime.StopApplication();
+        if (botOptions.Value.ShutdownAfterOffline)
+        {
+            appLifetime.StopApplication();
+        }
     }
 
     private async Task ProcessMessage(MessageChain message, BotContext thisBot)
