@@ -13,9 +13,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Lagrange.Core\Lagrange.Core\Lagrange.Core.csproj" />
-    <ProjectReference Include="..\StreamingCaptureBot.Abstraction\StreamingCaptureBot.Abstraction.csproj" />
-    <ProjectReference Include="..\StreamingCaptureBot.Utils\StreamingCaptureBot.Utils.csproj" />
+    <ProjectReference Include="..\..\Lagrange.Core\Lagrange.Core\Lagrange.Core.csproj" />
+    <ProjectReference Include="..\..\StreamingCaptureBot.Abstraction\StreamingCaptureBot.Abstraction.csproj" />
+    <ProjectReference Include="..\..\StreamingCaptureBot.Utils\StreamingCaptureBot.Utils.csproj" />
   </ItemGroup>
 
 </Project>
