@@ -1,17 +1,19 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>net8.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+		<AssemblyVersion>8.0.1.2</AssemblyVersion>
+		<FileVersion>8.0.1.2</FileVersion>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="FFmpeg.AutoGen.Bindings.DynamicallyLinked" Version="7.0.0" />
-    <PackageReference Include="FFmpeg.AutoGen.Bindings.DynamicallyLoaded" Version="7.0.0" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.0" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="FFmpeg.AutoGen.Bindings.DynamicallyLinked" Version="7.0.0" />
+		<PackageReference Include="FFmpeg.AutoGen.Bindings.DynamicallyLoaded" Version="7.0.0" />
+		<PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.0" />
+		<PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.0" />
+	</ItemGroup>
 
 </Project>

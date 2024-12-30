@@ -8,8 +8,8 @@
 		<DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
 		<DockerfileContext>.</DockerfileContext>
 		<ProduceReferenceAssembly>False</ProduceReferenceAssembly>
-		<AssemblyVersion>8.1.6.6</AssemblyVersion>
-		<FileVersion>8.1.6.6</FileVersion>
+		<AssemblyVersion>8.1.6.7</AssemblyVersion>
+		<FileVersion>8.1.6.7</FileVersion>
 	</PropertyGroup>
 
 	<PropertyGroup>
@@ -31,10 +31,6 @@
 		<ProjectReference Include="..\StreamingCaptureBot.Impl\Lagrange\StreamingCaptureBot.Impl.Lagrange.csproj" />
 		<ProjectReference Include="..\StreamingCaptureBot.Impl\Tencent\StreamingCaptureBot.Impl.Tencent.csproj" />
 		<ProjectReference Include="..\StreamingCaptureBot.Utils\StreamingCaptureBot.Utils.csproj" />
-	</ItemGroup>
-
-	<ItemGroup>
-	  <Folder Include="Bots\" />
 	</ItemGroup>
 
 	<ItemGroup>
