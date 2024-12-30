@@ -20,8 +20,7 @@ public static class ServiceCollectionExtension
         // logger
         services.AddHostedService(sp =>
         {
-            if (!_hasConfigured)
-                ConfigureFfMpeg(sp);
+            ConfigureFfMpeg(sp);
 
             var logger = sp.GetRequiredService<ILogger<FfMpegLogger>>();
             var loggerOptions = sp.GetRequiredService<IOptions<LoggerFilterOptions>>();
@@ -29,11 +28,10 @@ public static class ServiceCollectionExtension
             return ConfigureFfMpegLogger(logger, loggerOptions);
         });
 
-        // libewbp
+        // libWebp
         services.AddSingleton<FfmpegLibWebpEncoder>(sp =>
         {
-            if (!_hasConfigured)
-                ConfigureFfMpeg(sp);
+            _ = sp.GetRequiredService<FfMpegLogger>();
 
             var logger = sp.GetRequiredService<ILogger<FfmpegLibWebpEncoder>>();
             var formatter = sp.GetRequiredService<BinarySizeFormatter>();
@@ -43,8 +41,7 @@ public static class ServiceCollectionExtension
         // auto-detected decoder
         services.AddSingleton(sp =>
         {
-            if (!_hasConfigured)
-                ConfigureFfMpeg(sp);
+            _ = sp.GetRequiredService<FfMpegLogger>();
 
             var streamOption = sp.GetRequiredService<IOptions<StreamOption>>();
             var logger = sp.GetRequiredService<ILogger<GenericDecoder>>();
@@ -95,8 +92,6 @@ public static class ServiceCollectionExtension
         });
         return services;
     }
-
-    private static bool _hasConfigured;
 
     private static FfMpegLogger ConfigureFfMpegLogger(ILogger<FfMpegLogger> logger, IOptions<LoggerFilterOptions> loggerOptions)
     {
