@@ -2,7 +2,7 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 
-COPY ["./FfMpegLib.Net/FfMpegLib.Net.csproj", "./FfMpegLib.Net/"]
+COPY ["./FfMpeg.AutoGen.Wrapper/FfMpeg.AutoGen.Wrapper.csproj", "./FfMpeg.AutoGen.Wrapper/"]
 COPY ["./Lagrange.Core/Lagrange.Core/Lagrange.Core.csproj", "./Lagrange.Core/Lagrange.Core/"]
 COPY ["./StreamingCaptureBot.Abstraction/StreamingCaptureBot.Abstraction.csproj", "./StreamingCaptureBot.Abstraction/"]
 COPY ["./StreamingCaptureBot.Hosting/StreamingCaptureBot.Hosting.csproj", "./StreamingCaptureBot.Hosting/"]
