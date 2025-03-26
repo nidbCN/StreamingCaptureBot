@@ -30,8 +30,6 @@ switch ((botOption.Get<BotOption>() ?? new()).BotImplement)
         break;
 }
 
-builder.Services.AddSingleton<FfMpegLogger>();
-
 builder.Services.AddCodecs();
 builder.Services.AddLogging();
 

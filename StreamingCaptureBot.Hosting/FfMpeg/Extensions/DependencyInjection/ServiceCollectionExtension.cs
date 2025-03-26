@@ -15,12 +15,15 @@ namespace StreamingCaptureBot.Hosting.FfMpeg.Extensions.DependencyInjection;
 
 public static class ServiceCollectionExtension
 {
+    static bool _hasConfigured = false;
+
     public static IServiceCollection AddCodecs(this IServiceCollection services)
     {
         // logger
         services.AddHostedService(sp =>
         {
-            ConfigureFfMpeg(sp);
+            if (!_hasConfigured)
+                ConfigureFfMpeg(sp);
 
             var logger = sp.GetRequiredService<ILogger<FfMpegLogger>>();
             var loggerOptions = sp.GetRequiredService<IOptions<LoggerFilterOptions>>();
@@ -31,7 +34,8 @@ public static class ServiceCollectionExtension
         // libWebp
         services.AddSingleton<FfmpegLibWebpEncoder>(sp =>
         {
-            _ = sp.GetRequiredService<FfMpegLogger>();
+            if (!_hasConfigured)
+                ConfigureFfMpeg(sp);
 
             var logger = sp.GetRequiredService<ILogger<FfmpegLibWebpEncoder>>();
             var formatter = sp.GetRequiredService<BinarySizeFormatter>();
@@ -41,7 +45,8 @@ public static class ServiceCollectionExtension
         // auto-detected decoder
         services.AddSingleton(sp =>
         {
-            _ = sp.GetRequiredService<FfMpegLogger>();
+            if (!_hasConfigured)
+                ConfigureFfMpeg(sp);
 
             var streamOption = sp.GetRequiredService<IOptions<StreamOption>>();
             var logger = sp.GetRequiredService<ILogger<GenericDecoder>>();
@@ -188,5 +193,7 @@ public static class ServiceCollectionExtension
                 appLifeTime.StopApplication();
             }
         }
+
+        _hasConfigured = true;
     }
 }
