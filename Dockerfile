@@ -2,13 +2,13 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 
+COPY ["./FfMpegLib.Net/FfMpegLib.Net.csproj", "./FfMpegLib.Net/"]
+COPY ["./Lagrange.Core/Lagrange.Core/Lagrange.Core.csproj", "./Lagrange.Core/Lagrange.Core/"]
 COPY ["./StreamingCaptureBot.Abstraction/StreamingCaptureBot.Abstraction.csproj", "./StreamingCaptureBot.Abstraction/"]
 COPY ["./StreamingCaptureBot.Hosting/StreamingCaptureBot.Hosting.csproj", "./StreamingCaptureBot.Hosting/"]
 COPY ["./StreamingCaptureBot.Utils/StreamingCaptureBot.Utils.csproj", "./StreamingCaptureBot.Utils/"]
 COPY ["./StreamingCaptureBot.Impl/Tencent/StreamingCaptureBot.Impl.Tencent.csproj", "./StreamingCaptureBot.Impl/Tencent/"]
 COPY ["./StreamingCaptureBot.Impl/Lagrange/StreamingCaptureBot.Impl.Lagrange.csproj", "./StreamingCaptureBot.Impl/Lagrange/"]
-COPY ["./Lagrange.Core/Lagrange.Core/Lagrange.Core.csproj", "./Lagrange.Core/Lagrange.Core/"]
-COPY ["./FfMpegLib.Net/FfMpegLib.Net.csproj", "./FfMpegLib.Net"]
 
 RUN dotnet restore "./StreamingCaptureBot.Hosting/StreamingCaptureBot.Hosting.csproj"
 COPY . .
