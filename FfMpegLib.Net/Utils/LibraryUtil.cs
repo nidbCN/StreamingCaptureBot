@@ -31,6 +31,4 @@ public static class LibraryUtil
         var styledName = $"{libraryName}.{extension}.{versionName}";
         return NativeLibrary.Load(styledName, assembly, searchPath);
     }
-
-
 }

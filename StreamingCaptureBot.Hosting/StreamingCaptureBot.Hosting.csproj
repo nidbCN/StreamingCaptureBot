@@ -20,8 +20,8 @@
 	<ItemGroup>
 		<PackageReference Include="FFmpeg.AutoGen.Bindings.DynamicallyLinked" Version="7.0.0" />
 		<PackageReference Include="FFmpeg.AutoGen.Bindings.DynamicallyLoaded" Version="7.0.0" />
-		<PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.0" />
-		<PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.21.0" />
+		<PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.3" />
+		<PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.21.2" />
 	</ItemGroup>
 
 	<ItemGroup>

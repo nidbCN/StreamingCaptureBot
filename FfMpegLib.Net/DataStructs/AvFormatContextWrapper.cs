@@ -40,17 +40,15 @@ public class AvFormatContextWrapper : WrapperBase<AVFormatContext>
         }
     }
 
-    public unsafe bool TryFindStreamInfo(AVDictionary* option = null)
-        => FindStreamInfoCore(option) >= 0;
+    public unsafe bool TryFindStreamInfo(out int index, AVDictionary* option = null)
+        => (index = FindStreamInfoCore(option)) >= 0;
 
     public unsafe void FindStreamInfo(AVDictionary* option = null)
         => FindStreamInfoCore(option).ThrowExceptionIfError();
 
-    private unsafe int FindStreamInfoCore(AVDictionary* option)
-    {
-        ffmpeg.avformat_find_stream_info(UnmanagedPointer, &option)
+    private unsafe int FindStreamInfoCore(AVDictionary* option) 
+        => ffmpeg.avformat_find_stream_info(UnmanagedPointer, &option)
             .ThrowExceptionIfError();
-    }
 
     public override void Dispose()
     {

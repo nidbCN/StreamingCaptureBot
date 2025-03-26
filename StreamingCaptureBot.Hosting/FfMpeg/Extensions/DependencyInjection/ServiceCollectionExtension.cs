@@ -105,80 +105,88 @@ public static class ServiceCollectionExtension
     {
         var logger = provider.GetRequiredService<ILogger<FfMpegLogger>>();
         var streamOptions = provider.GetRequiredService<IOptions<StreamOption>>();
-
-        // use linked
-        if (streamOptions.Value.FfMpegLibrariesPath is null)
+        using (logger.BeginScope("FFMpeg loader"))
         {
-            logger.LogInformation("ffmpeg library path not set, use {bind}.", nameof(FFmpeg.AutoGen.Bindings.DynamicallyLinked));
-
-            if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            // use linked
+            if (streamOptions.Value.FfMpegLibrariesPath is null)
             {
-                var bindingAssembly = typeof(DynamicallyLinkedBindings).Assembly;
-                if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux)
-                    || RuntimeInformation.IsOSPlatform(OSPlatform.FreeBSD))
+                logger.LogInformation("ffmpeg library path not set, use {bind}.",
+                    nameof(FFmpeg.AutoGen.Bindings.DynamicallyLinked));
+
+                if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
                 {
-                    logger.LogInformation("Linux/FreeBSD platform, use resolver {name} for assembly `{asm}`.", nameof(LibraryUtil.LinuxFfMpegDllImportResolver), bindingAssembly.GetName());
-                    NativeLibrary.SetDllImportResolver(bindingAssembly, LibraryUtil.LinuxFfMpegDllImportResolver);
-                }
-                else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
-                {
-                    logger.LogInformation("OSX platform, use resolver {name} for assembly `{asm}`.", nameof(LibraryUtil.LinuxFfMpegDllImportResolver), bindingAssembly.GetName());
-                    NativeLibrary.SetDllImportResolver(bindingAssembly, LibraryUtil.MacOsFfMpegDllImportResolver);
+                    var bindingAssembly = typeof(DynamicallyLinkedBindings).Assembly;
+                    if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux)
+                        || RuntimeInformation.IsOSPlatform(OSPlatform.FreeBSD))
+                    {
+                        logger.LogInformation("platform: Linux/FreeBSD, use resolver {name} for assembly `{asm}`.",
+                            nameof(LibraryUtil.LinuxFfMpegDllImportResolver), bindingAssembly.GetName());
+                        NativeLibrary.SetDllImportResolver(bindingAssembly, LibraryUtil.LinuxFfMpegDllImportResolver);
+                    }
+                    else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+                    {
+                        logger.LogInformation("platform: OSX, use resolver {name} for assembly `{asm}`.",
+                            nameof(LibraryUtil.LinuxFfMpegDllImportResolver), bindingAssembly.GetName());
+                        NativeLibrary.SetDllImportResolver(bindingAssembly, LibraryUtil.MacOsFfMpegDllImportResolver);
+                    }
+                    else
+                    {
+                        throw new PlatformNotSupportedException();
+                    }
                 }
                 else
                 {
-                    throw new PlatformNotSupportedException();
+                    logger.LogInformation("platform: Windows, use runtime default resolver.");
                 }
-            }
 
-            DynamicallyLinkedBindings.Initialize();
-        }
-        else
-        {
-            DynamicallyLoadedBindings.LibrariesPath = streamOptions.Value.FfMpegLibrariesPath;
-
-            if (streamOptions.Value.FfMpegLibrariesPath == string.Empty)
-            {
-                logger.LogInformation("ffmpeg library path set to system default search path, use {bind}.",
-                    nameof(FFmpeg.AutoGen.Bindings.DynamicallyLoaded));
+                DynamicallyLinkedBindings.Initialize();
             }
             else
             {
-                logger.LogInformation("ffmpeg library path set to `{path}`, use {bind}.",
-                    DynamicallyLoadedBindings.LibrariesPath = streamOptions.Value.FfMpegLibrariesPath,
-                    nameof(FFmpeg.AutoGen.Bindings.DynamicallyLoaded));
+                DynamicallyLoadedBindings.LibrariesPath = streamOptions.Value.FfMpegLibrariesPath;
+
+                if (streamOptions.Value.FfMpegLibrariesPath == string.Empty)
+                {
+                    logger.LogInformation("ffmpeg library path set to system default search path, use {bind}.",
+                        nameof(FFmpeg.AutoGen.Bindings.DynamicallyLoaded));
+                }
+                else
+                {
+                    logger.LogInformation("ffmpeg library path set to `{path}`, use {bind}.",
+                        DynamicallyLoadedBindings.LibrariesPath = streamOptions.Value.FfMpegLibrariesPath,
+                        nameof(FFmpeg.AutoGen.Bindings.DynamicallyLoaded));
+                }
+
+                DynamicallyLoadedBindings.ThrowErrorIfFunctionNotFound = true;
+                DynamicallyLoadedBindings.Initialize();
             }
 
-            DynamicallyLoadedBindings.ThrowErrorIfFunctionNotFound = true;
-            DynamicallyLoadedBindings.Initialize();
-        }
-
-        // test ffmpeg load
-        try
-        {
-            var version = ffmpeg.av_version_info();
-            var libraryVersion = new StringBuilder(48 * DynamicallyLoadedBindings.LibraryVersionMap.Count);
-
-            foreach (var (library, requiredVersion) in DynamicallyLoadedBindings.LibraryVersionMap)
+            // test ffmpeg load
+            try
             {
-                var versionFunc = typeof(ffmpeg).GetMethod($"{library}_version");
-                var versionInfo = new VersionInfo((uint)(versionFunc?.Invoke(null, null) ?? 0u));
+                var version = ffmpeg.av_version_info();
+                var libraryVersion = new StringBuilder(48 * DynamicallyLoadedBindings.LibraryVersionMap.Count);
 
-                libraryVersion.AppendLine($"\tLibrary: {library}, require `{requiredVersion}`, load `{versionInfo}`");
+                foreach (var (library, requiredVersion) in DynamicallyLoadedBindings.LibraryVersionMap)
+                {
+                    var versionFunc = typeof(ffmpeg).GetMethod($"{library}_version");
+                    var versionInfo = new VersionInfo((uint)(versionFunc?.Invoke(null, null) ?? 0u));
+
+                    libraryVersion.AppendLine(
+                        $"\tLibrary: {library}, require `{requiredVersion}`, load `{versionInfo}`");
+                }
+
+                libraryVersion.Remove(libraryVersion.Length - 1, 1); // remove '\n'
+
+                logger.LogInformation("FFMpeg loaded, version `{v}`.", version);
+                logger.LogInformation("FFMpeg libraries loaded.\n{libInfo}", libraryVersion);
             }
-
-            libraryVersion.Remove(libraryVersion.Length - 1, 1);    // remove '\n'
-
-            logger.LogInformation("Load ffmpeg, version `{v}`", version);
-            logger.LogInformation("Load ffmpeg, libraries:\n{libInfo}", libraryVersion);
+            catch (NotSupportedException e)
+            {
+                logger.LogCritical(e, "Failed to load ffmpeg, exit.");
+                var appLifeTime = provider.GetRequiredService<IHostApplicationLifetime>();
+                appLifeTime.StopApplication();
+            }
         }
-        catch (NotSupportedException e)
-        {
-            logger.LogCritical(e, "Failed to load ffmpeg, exit.");
-            var appLifeTime = provider.GetRequiredService<IHostApplicationLifetime>();
-            appLifeTime.StopApplication();
-        }
-
-        _hasConfigured = true;
     }
 }
