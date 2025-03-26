@@ -25,7 +25,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\FfMpegLib.Net\FfMpeg.AutoGen.Wrapper.csproj" />
+		<ProjectReference Include="..\FfMpegLib.Net\FfMpegLib.Net.csproj" />
 		<ProjectReference Include="..\Lagrange.Core\Lagrange.Core\Lagrange.Core.csproj" />
 		<ProjectReference Include="..\StreamingCaptureBot.Abstraction\StreamingCaptureBot.Abstraction.csproj" />
 		<ProjectReference Include="..\StreamingCaptureBot.Impl\Lagrange\StreamingCaptureBot.Impl.Lagrange.csproj" />

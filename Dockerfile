@@ -8,6 +8,7 @@ COPY ["./StreamingCaptureBot.Utils/StreamingCaptureBot.Utils.csproj", "./Streami
 COPY ["./StreamingCaptureBot.Impl/Tencent/StreamingCaptureBot.Impl.Tencent.csproj", "./StreamingCaptureBot.Impl/Tencent/"]
 COPY ["./StreamingCaptureBot.Impl/Lagrange/StreamingCaptureBot.Impl.Lagrange.csproj", "./StreamingCaptureBot.Impl/Lagrange/"]
 COPY ["./Lagrange.Core/Lagrange.Core/Lagrange.Core.csproj", "./Lagrange.Core/Lagrange.Core/"]
+COPY ["./FfMpegLib.Net/FfMpegLib.Net.csproj", "./FfMpegLib.Net"]
 
 RUN dotnet restore "./StreamingCaptureBot.Hosting/StreamingCaptureBot.Hosting.csproj"
 COPY . .
