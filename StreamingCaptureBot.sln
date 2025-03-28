@@ -20,7 +20,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StreamingCaptureBot.Abstrac
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StreamingCaptureBot.Utils", "StreamingCaptureBot.Utils\StreamingCaptureBot.Utils.csproj", "{4F3C21BD-3AA2-415A-8300-6D561F88DDBC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FfMpegLib.Net", "FfMpegLib.Net\FfMpegLib.Net", "{42CB1151-209E-4263-A81C-CDB32AC356F3}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FfMpeg.AutoGen.Wrapper", "FfMpeg.AutoGen.Wrapper\FfMpeg.AutoGen.Wrapper.csproj", "{42CB1151-209E-4263-A81C-CDB32AC356F3}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Lagrange.Core", "Lagrange.Core\Lagrange.Core\Lagrange.Core.csproj", "{5C0128AF-478C-4322-8B08-D6F4D00559F0}"
 EndProject
