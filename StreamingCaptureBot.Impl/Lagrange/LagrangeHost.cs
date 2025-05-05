@@ -10,6 +10,7 @@ using Lagrange.Core.Message.Entity;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using StreamingCaptureBot.Abstraction;
 using StreamingCaptureBot.Abstraction.Controllers;
 using StreamingCaptureBot.Abstraction.Options;
 using StreamingCaptureBot.Impl.Lagrange.Options;
@@ -27,7 +28,8 @@ public class LagrangeHost(
     IOptions<LagrangeImplOption> implOptions,
     BotContext botCtx,
     StoreService storeService,
-    ITempBotController controller)
+    ITempBotController controller,
+    ITimerService timer)
     : IHostedLifecycleService
 {
     #region EventHandlers
@@ -51,6 +53,8 @@ public class LagrangeHost(
 
     private void ProcessBotOnline(BotContext thisBot, BotOnlineEvent _)
     {
+        timer.StartTimer();
+
         logger.LogInformation("Bot `{name}@{id}` online.", thisBot.BotName, thisBot.BotUin);
 
         // save device info and keystore
@@ -81,6 +85,7 @@ public class LagrangeHost(
 
     private void ProcessBotOffline(BotContext bot, BotOfflineEvent @event)
     {
+        timer.StopTimer();
         logger.LogError("Bot `{name}@{id}` offline.", bot.BotName, bot.BotUin);
 
         if (botOptions.Value.NotificationConfig.NotifyWebhookOnHeartbeat)

@@ -2,6 +2,7 @@ using Lagrange.Core;
 using Lagrange.Core.Common.Interface.Api;
 using Lagrange.Core.Message;
 using Microsoft.Extensions.Options;
+using StreamingCaptureBot.Abstraction;
 using StreamingCaptureBot.Abstraction.Options;
 using StreamingCaptureBot.Hosting.Utils;
 
@@ -10,7 +11,8 @@ namespace StreamingCaptureBot.Hosting;
 public class HeartBeatWorker(ILogger<HeartBeatWorker> logger,
     IOptions<BotOption> botOptions,
     BotContext botCtx,
-    BinarySizeFormatter formatter) : BackgroundService
+    BinarySizeFormatter formatter,
+    ITimerService timerService) : BackgroundService
 {
     private readonly HttpClient _httpClient = new();
 
@@ -22,6 +24,7 @@ public class HeartBeatWorker(ILogger<HeartBeatWorker> logger,
             var assemblyName = GetType().Assembly.GetName();
 
             var template = "Heartbeat time: {0:G}.\n"
+                           + @"Up time: {1:%d} days {1:hh\:mm\:ss}"
                           + $"From bot {botCtx.BotName}@{botCtx.BotUin}\n"
                           + $"Bot app {assemblyName.Name} v{assemblyName.Version}, "
                           + $"running on {Environment.OSVersion.VersionString}(.NET {Environment.Version}) "
@@ -33,7 +36,8 @@ public class HeartBeatWorker(ILogger<HeartBeatWorker> logger,
                 await Task.Delay(botOptions.Value.NotificationConfig.HeartbeatInterval,
                     stoppingToken);
 
-                var message = string.Format(formatter, template, DateTime.Now, Environment.WorkingSet);
+                var upTime = timerService.GetUpTime();
+                var message = string.Format(formatter, template, DateTime.Now, upTime, upTime, Environment.WorkingSet);
 
                 if (botOptions.Value.NotificationConfig is
                     { NotifyWebhookOnHeartbeat: true, WebhookUrl: not null })
