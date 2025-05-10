@@ -1,6 +1,6 @@
-using StreamingCaptureBot.Abstraction;
 using StreamingCaptureBot.Abstraction.Controllers;
 using StreamingCaptureBot.Abstraction.Options;
+using StreamingCaptureBot.Abstraction.Services;
 using StreamingCaptureBot.Hosting;
 using StreamingCaptureBot.Hosting.Configs;
 using StreamingCaptureBot.Hosting.Controllers;
@@ -38,7 +38,7 @@ builder.Services.AddTransient<BinarySizeFormatter>();
 
 builder.Services.AddSingleton<CaptureService>();
 builder.Services.AddSingleton<ITempBotController, TempBotController>();
-builder.Services.AddSingleton<ITimerService, TimerService>();
+builder.Services.AddSingleton<IUpTimerService, UpTimerService>();
 
 builder.Services.AddHostedService<HeartBeatWorker>();
 

@@ -1,6 +1,6 @@
-﻿namespace StreamingCaptureBot.Abstraction;
+﻿namespace StreamingCaptureBot.Abstraction.Services;
 
-public interface ITimerService
+public interface IUpTimerService
 {
     public void StartTimer();
 

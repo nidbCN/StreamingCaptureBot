@@ -21,9 +21,7 @@ public static class ServiceCollectionExtension
                 var deviceInfo = storeService.ReadDeviceInfo();
                 var keyStore = storeService.ReadKeyStore();
 
-                return BotFactory.Create(implOption?.LagrangeConfig ?? new(), deviceInfo, keyStore);
+                return BotFactory.Create(implOption.LagrangeConfig, deviceInfo, keyStore);
             })
             .AddHostedService<LagrangeHost>();
-
-
 }

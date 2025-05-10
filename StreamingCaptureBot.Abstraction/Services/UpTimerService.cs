@@ -1,8 +1,6 @@
-﻿using StreamingCaptureBot.Abstraction;
+﻿namespace StreamingCaptureBot.Abstraction.Services;
 
-namespace StreamingCaptureBot.Hosting.Services;
-
-public class TimerService() : ITimerService
+public class UpTimerService : IUpTimerService
 {
     private DateTime _upTime;
 

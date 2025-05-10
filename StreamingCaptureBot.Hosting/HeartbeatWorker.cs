@@ -2,8 +2,8 @@ using Lagrange.Core;
 using Lagrange.Core.Common.Interface.Api;
 using Lagrange.Core.Message;
 using Microsoft.Extensions.Options;
-using StreamingCaptureBot.Abstraction;
 using StreamingCaptureBot.Abstraction.Options;
+using StreamingCaptureBot.Abstraction.Services;
 using StreamingCaptureBot.Hosting.Utils;
 
 namespace StreamingCaptureBot.Hosting;
@@ -12,7 +12,7 @@ public class HeartBeatWorker(ILogger<HeartBeatWorker> logger,
     IOptions<BotOption> botOptions,
     BotContext botCtx,
     BinarySizeFormatter formatter,
-    ITimerService timerService) : BackgroundService
+    IUpTimerService timerService) : BackgroundService
 {
     private readonly HttpClient _httpClient = new();
 
@@ -24,9 +24,9 @@ public class HeartBeatWorker(ILogger<HeartBeatWorker> logger,
             var assemblyName = GetType().Assembly.GetName();
 
             var template = "Heartbeat time: {0:G}.\n"
-                           + @"Up time: {1:%d} days {1:hh\:mm\:ss}"
-                          + $"From bot {botCtx.BotName}@{botCtx.BotUin}\n"
-                          + $"Bot app {assemblyName.Name} v{assemblyName.Version}, "
+                           + @"Online: {1:%d} days {1:hh\:mm\:ss}\n"
+                          + $"Bot: {botCtx.BotName}@{botCtx.BotUin}\n"
+                          + $"Bot app `{assemblyName.Name} v{assemblyName.Version}`, "
                           + $"running on {Environment.OSVersion.VersionString}(.NET {Environment.Version}) "
                           + "with {1} memory used.";
 

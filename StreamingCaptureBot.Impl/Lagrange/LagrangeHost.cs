@@ -10,9 +10,9 @@ using Lagrange.Core.Message.Entity;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using StreamingCaptureBot.Abstraction;
 using StreamingCaptureBot.Abstraction.Controllers;
 using StreamingCaptureBot.Abstraction.Options;
+using StreamingCaptureBot.Abstraction.Services;
 using StreamingCaptureBot.Impl.Lagrange.Options;
 using StreamingCaptureBot.Impl.Lagrange.Services;
 using StreamingCaptureBot.Utils.Extensions;
@@ -29,7 +29,7 @@ public class LagrangeHost(
     BotContext botCtx,
     StoreService storeService,
     ITempBotController controller,
-    ITimerService timer)
+    IUpTimerService timer)
     : IHostedLifecycleService
 {
     #region EventHandlers
