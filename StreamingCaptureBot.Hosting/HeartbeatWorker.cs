@@ -24,11 +24,11 @@ public class HeartBeatWorker(ILogger<HeartBeatWorker> logger,
             var assemblyName = GetType().Assembly.GetName();
 
             var template = "Heartbeat time: {0:G}.\n"
-                           + @"Online: {1:%d} days {1:hh\:mm\:ss}\n"
-                          + $"Bot: {botCtx.BotName}@{botCtx.BotUin}\n"
-                          + $"Bot app `{assemblyName.Name} v{assemblyName.Version}`, "
-                          + $"running on {Environment.OSVersion.VersionString}(.NET {Environment.Version}) "
-                          + "with {1} memory used.";
+                           + "Online: {1:%d} days {1:hh\\:mm\\:ss}\n"
+                           + $"Bot: {botCtx.BotName}@{botCtx.BotUin}\n"
+                           + $"Bot app {assemblyName.Name} v{assemblyName.Version}, "
+                           + $"running on {Environment.OSVersion.VersionString}(.NET {Environment.Version}) "
+                           + "with {1} memory used.";
 
             while (!stoppingToken.IsCancellationRequested)
             {
